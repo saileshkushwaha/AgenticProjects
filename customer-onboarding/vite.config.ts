@@ -1,4 +1,5 @@
-import { defineConfig } from "vite";
+/// <reference types="vitest/config" />
+import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 
 // In dev, the front-end calls /api which is proxied to the local Express API.
@@ -11,5 +12,11 @@ export default defineConfig({
     proxy: {
       "/api": "http://localhost:8787",
     },
+  },
+  test: {
+    environment: "jsdom",
+    globals: true,
+    setupFiles: "./src/test/setup.ts",
+    include: ["src/**/*.{test,spec}.{ts,tsx}"],
   },
 });
