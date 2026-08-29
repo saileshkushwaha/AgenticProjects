@@ -8,7 +8,7 @@ import path from "path";
 import { existsSync } from "fs";
 import { db, initializeDatabase } from "./db/index.mjs";
 import { users, accounts, transactions, transfers, kycRecords, auditLogs } from "./db/schema.mjs";
-import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
+import { eq, desc, and, gte, lte, sql } from "drizzle-orm/sqlite-core";
 import { getVendor, VENDOR_NAMES } from "./kyc.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -195,9 +195,8 @@ function createApp() {
     if (endDate) conditions.push(lte(transactions.date, new Date(endDate)));
     if (category) conditions.push(eq(transactions.category, category));
 
-    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
-    const txns = await db.select().from(transactions).where(whereClause).orderBy(desc(transactions.date)).limit(limitNum).offset(offset);
-    const countResult = await db.select({ count: sql<number>`count(*)` }).from(transactions).where(whereClause);
+    const txns = await db.select().from(transactions).orderBy(desc(transactions.date)).limit(limitNum).offset(offset);
+    const countResult = await db.select({ count: sql`count(*)` }).from(transactions);
     const total = countResult[0]?.count || 0;
 
     res.json({ transactions: txns, total, page: pageNum, totalPages: Math.ceil(total / limitNum) });
