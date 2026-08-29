@@ -4,6 +4,7 @@ import * as schema from "./schema.mjs";
 
 const sqlite = new Database("banking.db");
 export const db = drizzle(sqlite, { schema });
+export { sqlite };
 
 export function initializeDatabase() {
   sqlite.exec(`

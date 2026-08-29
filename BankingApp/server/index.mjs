@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import { fileURLToPath } from "url";
 import path from "path";
 import { existsSync } from "fs";
-import { db, initializeDatabase } from "./db/index.mjs";
+import { db, sqlite, initializeDatabase } from "./db/index.mjs";
 import { users, accounts, transactions, transfers, kycRecords, auditLogs } from "./db/schema.mjs";
 import { eq, desc, and, gte, lte, sql } from "drizzle-orm/sqlite-core";
 import { getVendor, VENDOR_NAMES } from "./kyc.mjs";
@@ -185,11 +185,8 @@ function createApp() {
   // ---- Transaction Routes ----
   app.get("/api/transactions", authMiddleware, async (req, res) => {
     try {
-      const pageNum = 1;
-      const limitNum = 50;
-      const offset = 0;
-      const txns = await db.select().from(transactions).orderBy(desc(transactions.date)).limit(limitNum).offset(offset);
-      res.json({ transactions: txns, total: txns.length, page: pageNum, totalPages: 1 });
+      const rows = sqlite.prepare("SELECT * FROM transactions ORDER BY date DESC LIMIT 50").all();
+      res.json({ transactions: rows, total: rows.length, page: 1, totalPages: 1 });
     } catch (e) {
       console.error("Transactions error:", e);
       res.status(500).json({ error: e.message });
