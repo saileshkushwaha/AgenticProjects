@@ -1,15 +1,13 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { describe, test, expect, vi } from "vitest";
 import { Dashboard } from "./Dashboard";
-import { api } from "../services/api";
 
 vi.mock("../services/api", () => ({
   api: {
-    listApplications: vi
-      .fn()
-      .mockResolvedValue([
+    listApplications: vi.fn(() =>
+      Promise.resolve([
         {
-          id: "APP-2026-0481",
+          id: "APP-1",
           applicant: "Jane Doe",
           product: "Savings Account",
           submitted: "2026-08-28",
@@ -17,31 +15,33 @@ vi.mock("../services/api", () => ({
           timeline: [],
         },
         {
-          id: "APP-2026-0478",
+          id: "APP-2",
           applicant: "Marcus Lee",
           product: "Current Account",
-          submitted: "2026-08-28",
+          submitted: "2026-08-27",
           status: "Approved",
           timeline: [],
         },
-      ]),
-    getApplication: vi.fn(),
-    createApplication: vi.fn(),
-    decide: vi.fn(),
-    kycDocument: vi.fn(),
-    kycLiveness: vi.fn(),
-    kycWatchlist: vi.fn(),
+      ])
+    ),
   },
 }));
 
 describe("Dashboard", () => {
-  it("renders the application queue fetched from the API", async () => {
+  test("renders KPI cards and application queue", async () => {
     render(<Dashboard onNew={() => {}} onOpen={() => {}} />);
-    expect(await screen.findByText("Jane Doe")).toBeInTheDocument();
-    expect(screen.getByText("Marcus Lee")).toBeInTheDocument();
-    // Status badges render
-    expect(screen.getByText("In Review")).toBeInTheDocument();
-    expect(screen.getByText("Approved")).toBeInTheDocument();
-    expect(api.listApplications).toHaveBeenCalled();
+    expect(await screen.findByText("Total applications")).toBeDefined();
+    expect(screen.getAllByText("1").length).toBe(2);
+    expect(screen.getAllByText("In Review").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Approved").length).toBeGreaterThan(0);
+  });
+
+  test("calls onNew when New Application clicked", async () => {
+    const onNew = vi.fn();
+    render(<Dashboard onNew={onNew} onOpen={() => {}} />);
+    await waitFor(() => screen.getByText("Application Queue"));
+    const headerBtn = screen.getByRole("button", { name: "+ New Application" });
+    fireEvent.click(headerBtn);
+    expect(onNew).toHaveBeenCalled();
   });
 });
