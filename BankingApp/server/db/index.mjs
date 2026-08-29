@@ -1,8 +1,10 @@
 import Database from "better-sqlite3";
 import { drizzle } from "drizzle-orm/better-sqlite3";
 import * as schema from "./schema.mjs";
+import path from "path";
 
-const sqlite = new Database("banking.db");
+const dbPath = process.env.DB_PATH || path.join(process.cwd(), "banking.db");
+const sqlite = new Database(dbPath);
 export const db = drizzle(sqlite, { schema });
 export { sqlite };
 

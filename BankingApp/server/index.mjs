@@ -260,11 +260,8 @@ function createApp() {
 
   app.get("/api/transfers", authMiddleware, async (req, res) => {
     try {
-      const userAccounts = await db.select().from(accounts).where(eq(accounts.userId, req.user.id));
-      const accountIds = userAccounts.map((a) => a.id);
-      if (accountIds.length === 0) return res.json({ transfers: [] });
-      const userTransfers = await db.select().from(transfers).orderBy(desc(transfers.createdAt)).limit(50);
-      res.json({ transfers: userTransfers });
+      const rows = sqlite.prepare("SELECT * FROM transfers ORDER BY created_at DESC LIMIT 50").all();
+      res.json({ transfers: rows });
     } catch (e) {
       console.error("Transfers error:", e);
       res.status(500).json({ error: e.message });
