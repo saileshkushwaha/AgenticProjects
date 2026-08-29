@@ -26,11 +26,8 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      - name: Prepare deployment
-        run: |
-          cd dist
-          echo "saileshkushwaha.github.io" > CNAME
-          touch .nojekyll
+      - name: Add .nojekyll
+        run: touch BankingApp/dist/.nojekyll
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
