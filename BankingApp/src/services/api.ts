@@ -1,8 +1,8 @@
-const BASE =
-  (import.meta as any).env?.VITE_API_URL ||
-  ((import.meta as any).env?.MODE === "production"
-    ? "https://agenticprojects-nmyk.onrender.com"
-    : "/api");
+const PROD_API = "https://agenticprojects-nmyk.onrender.com";
+const DEV_API = "/api";
+
+const isProd = window.location.hostname.includes("github.io");
+const BASE = isProd ? PROD_API : DEV_API;
 
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
   const token = localStorage.getItem("token");
