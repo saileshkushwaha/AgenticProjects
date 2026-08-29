@@ -3,6 +3,7 @@ const DEV_API = "/api";
 
 const isProd = window.location.hostname.includes("github.io");
 const BASE = isProd ? PROD_API : DEV_API;
+console.log("API Base URL:", BASE, "Hostname:", window.location.hostname);
 
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
   const token = localStorage.getItem("token");
