@@ -1,9 +1,4 @@
-const PROD_API = "https://agenticprojects-nmyk.onrender.com";
-const DEV_API = "/api";
-
-const isProd = window.location.hostname.includes("github.io");
-const BASE = isProd ? PROD_API : DEV_API;
-console.log("API Base URL:", BASE, "Hostname:", window.location.hostname);
+const BASE = "https://agenticprojects-nmyk.onrender.com";
 
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
   const token = localStorage.getItem("token");
