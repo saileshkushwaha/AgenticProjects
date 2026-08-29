@@ -6,18 +6,25 @@ const BASE = isProd ? PROD_API : DEV_API;
 
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
   const token = localStorage.getItem("token");
-  const res = await fetch(`${BASE}${path}`, {
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    ...init,
-  });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body.error || `Request failed (${res.status})`);
+  try {
+    const res = await fetch(`${BASE}${path}`, {
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(init?.headers || {}),
+      },
+      ...init,
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || `Request failed (${res.status})`);
+    }
+    return res.json() as Promise<T>;
+  } catch (e: any) {
+    console.error(`API Error [${path}]:`, e.message);
+    throw e;
   }
-  return res.json() as Promise<T>;
 }
 
 export interface Account {
