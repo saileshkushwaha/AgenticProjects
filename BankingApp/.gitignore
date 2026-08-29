@@ -1,0 +1,9 @@
+node_modules/
+dist/
+*.local
+.env
+.env.local
+.banking.db
+*.log
+coverage/
+.DS_Store
