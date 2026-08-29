@@ -13,7 +13,7 @@ import { Login } from "./screens/Login";
 import { Register } from "./screens/Register";
 
 function ErrorBoundary({ children }: { children: React.ReactNode }) {
-  const [error, setError] = React.useState<Error | null>(null);
+  const [error] = React.useState<Error | null>(null);
   if (error) {
     return (
       <div style={{ padding: "2rem", textAlign: "center" }}>
