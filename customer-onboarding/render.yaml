@@ -1,0 +1,19 @@
+# Render deployment for the API (split deploy: SPA on Cloudflare Pages).
+# Free tier, no credit card. Cold start ~30-60s after 15 min idle.
+# The SPA (Cloudflare Pages) calls this service via VITE_API_URL.
+# https://render.com/docs/web-services
+services:
+  - type: web
+    name: customer-onboarding-api
+    runtime: node
+    plan: free
+    region: oregon
+    branch: main
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: KYC_VENDOR
+        value: persona
+      - key: NODE_ENV
+        value: production

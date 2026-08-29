@@ -1,0 +1,31 @@
+{
+  "name": "customer-onboarding",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Enterprise Customer Onboarding (Banking) — full-stack: React+TS+Vite front-end + Express API with pluggable KYC vendor adapters. Deployable as a single service (Render) or split (Cloudflare Pages SPA + Render API).",
+  "scripts": {
+    "dev": "concurrently -n server,web -c blue,green \"npm:dev:server\" \"npm:dev:web\"",
+    "dev:server": "node server/index.mjs",
+    "dev:web": "vite",
+    "server": "node server/index.mjs",
+    "start": "node server/index.mjs",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.0",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11"
+  }
+}
