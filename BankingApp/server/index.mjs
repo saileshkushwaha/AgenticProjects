@@ -136,6 +136,21 @@ function createApp() {
     res.json({ ...found[0], transactions: txns });
   });
 
+  app.post("/api/accounts/:id/deposit", authMiddleware, async (req, res) => {
+    const { amount, description } = req.body || {};
+    const amountCents = Math.round(Number(amount) * 100);
+    if (!amountCents || amountCents <= 0) return res.status(400).json({ error: "amount must be positive" });
+    const found = await db.select().from(accounts).where(and(eq(accounts.id, req.params.id), eq(accounts.userId, req.user.id))).limit(1);
+    if (found.length === 0) return res.status(404).json({ error: "Account not found" });
+    const account = found[0];
+    const newBalance = account.balance + amountCents;
+    await db.update(accounts).set({ balance: newBalance }).where(eq(accounts.id, req.params.id));
+    const txnId = randomUUID();
+    await db.insert(transactions).values({ id: txnId, accountId: req.params.id, type: "credit", amount: amountCents, description: description || "Deposit", category: "income", date: new Date(), balanceAfter: newBalance });
+    await logAudit(req.user.id, "deposit", "accounts", req.params.id, { amount: amountCents });
+    res.json({ id: req.params.id, balance: newBalance, transaction: { id: txnId, amount: amountCents, description: description || "Deposit" } });
+  });
+
   // ---- Transaction Routes ----
   app.get("/api/transactions", authMiddleware, async (req, res) => {
     const { accountId, startDate, endDate, category, page = "1", limit = "50" } = req.query;
