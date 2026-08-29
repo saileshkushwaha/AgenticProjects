@@ -8,7 +8,7 @@ import path from "path";
 import { existsSync } from "fs";
 import { db, sqlite, initializeDatabase } from "./db/index.mjs";
 import { users, accounts, transactions, transfers, kycRecords, auditLogs } from "./db/schema.mjs";
-import { eq, desc, and, gte, lte, sql } from "drizzle-orm/sqlite-core";
+import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
 import { getVendor, VENDOR_NAMES } from "./kyc.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
