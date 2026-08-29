@@ -196,8 +196,8 @@ function createApp() {
     if (category) conditions.push(eq(transactions.category, category));
 
     const txns = await db.select().from(transactions).orderBy(desc(transactions.date)).limit(limitNum).offset(offset);
-    const countResult = await db.select({ count: sql`count(*)` }).from(transactions);
-    const total = countResult[0]?.count || 0;
+    const allTxns = await db.select().from(transactions);
+    const total = allTxns.length;
 
     res.json({ transactions: txns, total, page: pageNum, totalPages: Math.ceil(total / limitNum) });
   });
