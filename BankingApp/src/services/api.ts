@@ -1,7 +1,7 @@
 const BASE =
   (import.meta as any).env?.VITE_API_URL ||
   ((import.meta as any).env?.MODE === "production"
-    ? "https://banking-app-api.onrender.com"
+    ? "https://agenticprojects-nmyk.onrender.com"
     : "/api");
 
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
