@@ -28,7 +28,7 @@ jobs:
 
       - name: Prepare dist
         run: |
-          cd BankingApp/dist
+          cd dist
           touch .nojekyll
 
       - name: Deploy to gh-pages
