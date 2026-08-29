@@ -18,12 +18,43 @@ const JWT_SECRET = process.env.JWT_SECRET || "banking-app-secret-key-change-in-p
 const PORT = process.env.PORT || 8787;
 const DEFAULT_VENDOR = process.env.KYC_VENDOR || "persona";
 
+async function seedDatabase() {
+  try {
+    const existing = await db.select().from(users).where(eq(users.email, "demo@bank.com")).limit(1);
+    if (existing.length > 0) return;
+
+    const userId = randomUUID();
+    const passwordHash = await bcrypt.hash("demo1234", 12);
+    await db.insert(users).values({ id: userId, email: "demo@bank.com", passwordHash, fullName: "Demo User", role: "customer" });
+
+    const checkingId = randomUUID();
+    const savingsId = randomUUID();
+    await db.insert(accounts).values([
+      { id: checkingId, userId, type: "checking", name: "Primary Checking", balance: 450000, currency: "USD", status: "active" },
+      { id: savingsId, userId, type: "savings", name: "Emergency Savings", balance: 300000, currency: "USD", status: "active" },
+    ]);
+
+    const now = new Date();
+    await db.insert(transactions).values([
+      { id: randomUUID(), accountId: checkingId, type: "credit", amount: 500000, description: "Initial deposit", category: "income", date: now, balanceAfter: 500000 },
+      { id: randomUUID(), accountId: savingsId, type: "credit", amount: 250000, description: "Savings deposit", category: "income", date: now, balanceAfter: 250000 },
+      { id: randomUUID(), accountId: checkingId, type: "debit", amount: 50000, description: "Transfer: Monthly savings", category: "transfer", date: now, balanceAfter: 450000 },
+      { id: randomUUID(), accountId: savingsId, type: "credit", amount: 50000, description: "Transfer received: Monthly savings", category: "transfer", date: now, balanceAfter: 300000 },
+    ]);
+
+    await db.insert(auditLogs).values({ id: randomUUID(), userId, action: "seed_data", entityType: "users", entityId: userId, metadata: JSON.stringify({ seeded: true }) });
+  } catch (e) {
+    console.error("Seed failed:", e);
+  }
+}
+
 function createApp() {
   const app = express();
   app.use(cors());
   app.use(express.json());
 
   initializeDatabase();
+  seedDatabase();
 
   // ---- Auth Middleware ----
   function authMiddleware(req, res, next) {
