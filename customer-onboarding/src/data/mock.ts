@@ -25,6 +25,27 @@ export interface FinancialProfile {
   sourceOfFunds: string;
 }
 
+export type AccountType = "Personal" | "Business";
+
+export interface BeneficialOwner {
+  fullName: string;
+  ownershipPct: string;
+  dob: string;
+  nationalId: string;
+}
+
+export interface BusinessProfile {
+  legalName: string;
+  tradingName: string;
+  entityType: string;
+  registrationNumber: string;
+  incorporationDate: string;
+  industry: string;
+  country: string;
+  employeeCount: string;
+  expectedMonthlyVolume: string;
+}
+
 export interface TimelineEvent {
   label: string;
   time: string;
@@ -38,6 +59,9 @@ export interface Application {
   submitted: string;
   status: AppStatus;
   timeline: TimelineEvent[];
+  accountType?: AccountType;
+  business?: BusinessProfile;
+  beneficialOwners?: BeneficialOwner[];
 }
 
 export const statusClass: Record<AppStatus, string> = {
@@ -66,4 +90,23 @@ export const emptyFinancial: FinancialProfile = {
   employer: "",
   annualIncome: "",
   sourceOfFunds: "",
+};
+
+export const emptyBusiness: BusinessProfile = {
+  legalName: "",
+  tradingName: "",
+  entityType: "",
+  registrationNumber: "",
+  incorporationDate: "",
+  industry: "",
+  country: "United States",
+  employeeCount: "",
+  expectedMonthlyVolume: "",
+};
+
+export const emptyOwner: BeneficialOwner = {
+  fullName: "",
+  ownershipPct: "",
+  dob: "",
+  nationalId: "",
 };
