@@ -45,3 +45,16 @@ Document findings, compliance status, remediation plan. Create VPAT if needed.
 
 ## Output
 Use: `templates/accessibility-report.md` | Capability: `capabilities/accessibility.md`
+
+## Anti-Patterns
+
+1. **Ignoring stakeholders** — Not engaging key stakeholders
+2. **One-way communication** — Not gathering feedback
+3. **Scope creep** — Uncontrolled expansion
+4. **No documentation** — Not documenting decisions
+
+## Edge Cases
+
+- Conflicting stakeholder needs → Facilitate prioritization
+- No stakeholder availability → Use async communication
+- Resistance to change → Provide training and support

@@ -45,3 +45,16 @@ Promote usage. Gather feedback. Iterate on content.
 
 ## Output
 Use: `templates/knowledge-base.md` | Capability: `capabilities/knowledge-management.md`
+
+## Anti-Patterns
+
+1. **Ignoring stakeholders** — Not engaging key stakeholders
+2. **One-way communication** — Not gathering feedback
+3. **Scope creep** — Uncontrolled expansion
+4. **No documentation** — Not documenting decisions
+
+## Edge Cases
+
+- Conflicting stakeholder needs → Facilitate prioritization
+- No stakeholder availability → Use async communication
+- Resistance to change → Provide training and support

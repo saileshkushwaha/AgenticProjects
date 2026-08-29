@@ -45,3 +45,16 @@ Document savings, recommendations, ongoing optimization plan.
 
 ## Output
 Use: `templates/finops-report.md` | Capability: `capabilities/finops.md`
+
+## Anti-Patterns
+
+1. **Big bang migration** — Migrating everything at once
+2. **No rollback plan** — Migrating without recovery strategy
+3. **Ignoring data quality** — Migrating without validation
+4. **No testing** — Deploying without testing migration
+
+## Edge Cases
+
+- Large data volumes → Use incremental migration
+- Schema mismatch → Create transformation layer
+- Downtime constraints → Use blue-green deployment

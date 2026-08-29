@@ -129,6 +129,8 @@ graph TD
     ROOT --> METRICS[METRICS.md]
     ROOT --> CHANGELOG[CHANGELOG.md]
     ROOT --> DIAGRAMS[DIAGRAMS.md]
+    ROOT --> VERSIONING[VERSIONING.md]
+    ROOT --> CONTRIBUTING[CONTRIBUTING.md]
     ROOT --> CORE[core/]
     ROOT --> WORKFLOWS[workflows/]
     ROOT --> CAPABILITIES[capabilities/]
@@ -136,4 +138,51 @@ graph TD
     ROOT --> ARTIFACTS[artifacts/]
     ROOT --> GUIDES[guides/]
     ROOT --> EXAMPLES[examples/]
+```
+
+## Quality Gate Decision Tree
+
+```mermaid
+flowchart TD
+    Start([Start Phase]) --> Execute[Execute Steps]
+    Execute --> Check{QG Pass?}
+    Check -->|Yes| Next[Next Phase]
+    Check -->|No| Assess[Assess Failure]
+    Assess --> Minor{Minor Issue?}
+    Minor -->|Yes| Fix[Fix & Continue]
+    Minor -->|No| Revise[Revise Output]
+    Revise --> Execute
+    Fix --> Next
+```
+
+## Model Adaptation Flow
+
+```mermaid
+flowchart TD
+    Start([Model Selected]) --> Tier{Model Tier?}
+    Tier -->|Full| Default[Use Default Settings]
+    Tier -->|Mid| Strict[Enable strict_mode]
+    Tier -->|Basic| Minimal[Use Minimal Verbosity]
+    Default --> Execute[Execute Workflow]
+    Strict --> Execute
+    Minimal --> Execute
+    Execute --> Output[Generate Output]
+    Output --> Validate{Validate}
+    Output -->|Pass| Done([Complete])
+    Output -->|Fail| Refine[Refine & Retry]
+    Refine --> Output
+```
+
+## Artifact Generation Process
+
+```mermaid
+flowchart LR
+    Input[User Request] --> Select[Select Workflow]
+    Select --> Load[Load Template]
+    Load --> Execute[Execute Steps]
+    Execute --> Fill[Fill Template]
+    Fill --> Verify{QG Check}
+    Verify -->|Pass| Deliver[Deliver Artifact]
+    Verify -->|Fail| Iterate[Iterate]
+    Iterate --> Fill
 ```

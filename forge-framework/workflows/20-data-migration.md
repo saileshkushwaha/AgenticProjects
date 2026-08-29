@@ -45,3 +45,16 @@ Validate data integrity. Reconcile counts. Document results.
 
 ## Output
 Use: `templates/data-migration-report.md` | Capability: `capabilities/data-migration.md`
+
+## Anti-Patterns
+
+1. **Big bang migration** — Migrating everything at once
+2. **No rollback plan** — Migrating without recovery strategy
+3. **Ignoring data quality** — Migrating without validation
+4. **No testing** — Deploying without testing migration
+
+## Edge Cases
+
+- Large data volumes → Use incremental migration
+- Schema mismatch → Create transformation layer
+- Downtime constraints → Use blue-green deployment

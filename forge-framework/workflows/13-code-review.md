@@ -54,3 +54,16 @@ Review fixes. Verify issues resolved. Approve or request changes.
 ## Output
 
 Use: `templates/code-review-report.md` | Capability: `capabilities/code-review.md`
+
+## Anti-Patterns
+
+1. **Security as afterthought** — Adding security late in development
+2. **Tool overload** — Using too many tools without integration
+3. **No documentation** — Not documenting security decisions
+4. **Ignoring compliance** — Not meeting regulatory requirements
+
+## Edge Cases
+
+- Legacy systems → Use incremental security improvements
+- No security team → Use automated tools and external audits
+- Zero-day vulnerabilities → Have incident response plan ready

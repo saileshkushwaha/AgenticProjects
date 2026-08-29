@@ -8,18 +8,60 @@
 
 ## 5-Minute Quick Start
 
-1. **Load system prompt** from `core/system-prompt.md`
-2. **Select workflow** based on task (see QUICK-REFERENCE.md)
-3. **Load workflow** as context
-4. **Execute task** following workflow steps
-5. **Review output** against quality gates
+### Step 1: Load the System Prompt
+Copy the contents of `core/system-prompt.md` into your agent's system prompt field.
 
-## First Project: Research Task
+**For Claude.ai**: Paste into the "System prompt" field in your project settings.
+**For GPT**: Paste into the "Custom Instructions" section.
+**For CLI tools**: Use `--system` flag or equivalent.
+
+### Step 2: Select a Workflow
+Identify what you need to do and select the corresponding workflow:
+
+| Need | Workflow |
+|------|----------|
+| Research a technology | `workflows/01-research.md` |
+| Analyze requirements | `workflows/02-analyze.md` |
+| Design architecture | `workflows/03-design.md` |
+| Write code | `workflows/04-implement.md` |
+| Test software | `workflows/05-test.md` |
+| Fix a bug | `workflows/06-debug.md` |
+| Deploy software | `workflows/07-deploy.md` |
+
+See `QUICK-REFERENCE.md` for all 34 workflows.
+
+### Step 3: Load the Workflow
+Provide the selected workflow as context to your agent. You can:
+- Paste the workflow content directly
+- Reference the workflow file path
+- Include as part of your prompt
+
+### Step 4: Execute the Task
+Ask your agent to perform the task. It will follow the workflow steps.
+
+**Example prompt:**
+```
+I need to research the best database for a Python microservice 
+handling 10K transactions/second. Please follow the research workflow 
+and provide a detailed comparison.
+```
+
+### Step 5: Review the Output
+Check the output against the quality gates defined in the workflow. If quality gates fail, ask for revisions.
+
+## First Project: Research Task (Detailed)
 
 1. Load `core/system-prompt.md` as system prompt
 2. Load `workflows/01-research.md` as context
 3. Ask: "Research the best database for a Python microservice handling 10K transactions/second"
-4. Agent follows 7-step research workflow
+4. Agent follows 7-step research workflow:
+   - Defines objectives
+   - Gathers information from multiple sources
+   - Verifies claims across independent sources
+   - Evaluates options using weighted scoring
+   - Identifies best practices
+   - Synthesizes findings
+   - Produces a research report
 5. Output uses `templates/research-report.md` format
 
 ## Configuration
@@ -28,12 +70,28 @@ Create `forge.config.md` in project root:
 
 ```markdown
 # Forge Configuration
+
 ## Global Settings
 - output_format: markdown
 - quality_gates: enabled
 - verbosity: standard
 - language: en
+- strict_mode: false
+
+## Workflow Overrides
+- 01-research:
+  - verbosity: detailed
+- 04-implement:
+  - verbosity: detailed
 ```
+
+## Context Window Management
+
+| Context Size | Strategy |
+|--------------|----------|
+| **Small (<8K)** | Load system prompt OR workflow (not both), use minimal verbosity |
+| **Medium (8K-32K)** | Load system prompt + one workflow, use standard verbosity |
+| **Large (32K+)** | Load system prompt + workflow + additional context, use detailed verbosity |
 
 ## Team Adoption
 

@@ -47,3 +47,16 @@ Document inventory, versioning, deprecation, DX improvements.
 ## Output
 
 Use: `templates/api-management-report.md` | Capability: `capabilities/api-management.md`
+
+## Anti-Patterns
+
+1. **Writing for yourself** — Not considering audience needs
+2. **No review** — Publishing without technical review
+3. **Outdated docs** — Not maintaining documentation
+4. **No examples** — Abstract explanations without examples
+
+## Edge Cases
+
+- Multiple audiences → Create separate documents per audience
+- No existing template → Adapt from similar project
+- Technical reviewer unavailable → Use peer review

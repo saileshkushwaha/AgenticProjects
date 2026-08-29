@@ -45,3 +45,16 @@ Train team. Roll out tools. Measure adoption and impact.
 
 ## Output
 Use: `templates/ai-augmented-plan.md` | Capability: `capabilities/ai-augmented.md`
+
+## Anti-Patterns
+
+1. **Security as afterthought** — Adding security late
+2. **Tool overload** — Too many tools without integration
+3. **No automation** — Manual processes in CI/CD
+4. **Ignoring compliance** — Not meeting regulatory requirements
+
+## Edge Cases
+
+- Legacy systems → Use incremental security improvements
+- No security team → Use automated tools
+- Compliance conflicts → Consult legal team

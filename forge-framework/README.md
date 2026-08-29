@@ -12,7 +12,12 @@ A production-ready, markdown-based agentic framework for end-to-end SDLC operati
 | Decision Documentation | Rare | Required |
 | Edge Case Coverage | Hit or miss | Systematic |
 
-## Core Capabilities (34 Workflows)
+## Core Capabilities (37 Workflows)
+
+### Master Workflow
+| # | Capability | Workflow |
+|---|------------|----------|
+| 0 | Greenfield Master | [00-greenfield-master](workflows/00-greenfield-master.md) |
 
 ### Foundation Workflows (01-09)
 | # | Capability | Workflow |
@@ -81,14 +86,16 @@ A production-ready, markdown-based agentic framework for end-to-end SDLC operati
 forge-framework/
 ├── README.md, QUICK-REFERENCE.md, GLOSSARY.md, ANTI-PATTERNS.md
 ├── METRICS.md, CHANGELOG.md, DIAGRAMS.md, FRAMEWORK_ENHANCEMENT_RESEARCH.md
+├── VERSIONING.md, CONTRIBUTING.md, EXTENSION-POINTS.md, API-REFERENCE.md
+├── CASE-STUDIES.md, VERSIONING.md
 ├── core/ (system-prompt.md, persona.md, principles.md)
-├── workflows/ (01-34)
-├── capabilities/ (34 capability definitions)
-├── templates/ (34 artifact templates)
+├── workflows/ (00-36)
+├── capabilities/ (36 capability definitions)
+├── templates/ (36 artifact templates)
 ├── artifacts/ (output-format.md)
 ├── guides/ (integration, configuration, troubleshooting, web-search,
 │           research-mode-selection, onboarding, migration, compatibility,
-│           tool-connectors)
+│           greenfield, validation)
 └── examples/ (research-report-example.md, analysis-report-example.md)
 ```
 
@@ -124,6 +131,9 @@ Create `forge.config.md` in project root with global settings and per-workflow o
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v4.1.0 | 2026-08-29 | Added retrospective workflow, technical debt management, case studies, validation guide. Fixed all consistency gaps. |
+| v4.0.0 | 2026-08-29 | Added greenfield master workflow, project scaffolding, greenfield capability |
+| v3.1.0 | 2026-08-29 | Added CONTRIBUTING.md, VERSIONING.md, EXTENSION-POINTS.md, API-REFERENCE.md |
 | v3.0.0 | 2026-08-28 | Added 15 new workflows (Tier 3 + Tier 4) for complete SDLC coverage |
 | v2.0.0 | 2026-08-28 | Added 10 new workflows (Security, Performance, Incident, Code Review, Planning, Docs, Config, Release, QA, API) |
 | v1.4.0 | 2026-08-28 | Optimized for token efficiency |

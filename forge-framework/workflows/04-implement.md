@@ -30,6 +30,36 @@
 **Output**: Source code | **Time**: 2-20 hours | **Tools**: IDE, linters, formatters
 **Edge Cases**: Design ambiguity → document assumption; performance → naive first; API changes → adapter
 
+**Code Example - Clean Function:**
+```kotlin
+// Good: Single responsibility, meaningful names, defensive
+fun calculateTotalPrice(items: List<Item>, discount: Double): BigDecimal {
+    require(discount in 0.0..1.0) { "Discount must be between 0 and 1" }
+    
+    val subtotal = items.fold(BigDecimal.ZERO) { acc, item ->
+        acc + item.price.multiply(BigDecimal(item.quantity))
+    }
+    
+    return subtotal.multiply(BigDecimal.ONE - BigDecimal(discount))
+}
+```
+
+**Code Example - Error Handling:**
+```kotlin
+// Good: Handle errors explicitly, don't ignore
+fun fetchUser(userId: String): Result<User> {
+    return try {
+        val user = api.getUser(userId)
+        Result.success(user)
+    } catch (e: NotFoundException) {
+        Result.failure(UserNotFoundException("User $userId not found"))
+    } catch (e: Exception) {
+        logger.error("Failed to fetch user $userId", e)
+        Result.failure(e)
+    }
+}
+```
+
 ### Step 4: Unit Testing
 **Actions**: Write tests for each function, test happy/error paths, test edge cases, mock dependencies, achieve coverage.
 **Principles**: Arrange-Act-Assert, one assertion per test, fast, independent, repeatable
