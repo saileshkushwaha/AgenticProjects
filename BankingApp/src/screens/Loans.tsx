@@ -3,7 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import { Building2, Car, Home, GraduationCap, Briefcase, Calculator, CheckCircle } from "lucide-react";
+import { Building2, Car, Home, GraduationCap, Briefcase, Calculator } from "lucide-react";
 
 const LOAN_PRODUCTS = [
   { id: "personal", title: "Personal Loan", rate: "8.5%", max: "$50,000", icon: Briefcase, color: "bg-blue-100 text-blue-600" },
@@ -16,7 +16,6 @@ export function Loans() {
   const [showCalculator, setShowCalculator] = useState(false);
   const [loanAmount, setLoanAmount] = useState("10000");
   const [loanTerm, setLoanTerm] = useState("12");
-  const [applied, setApplied] = useState(false);
 
   const monthlyPayment = (() => {
     const principal = parseFloat(loanAmount) || 0;

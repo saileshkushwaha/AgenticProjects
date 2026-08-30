@@ -17,6 +17,7 @@ import { KycVerification } from "./screens/KycVerification";
 import { Reports } from "./screens/Reports";
 import { Profile } from "./screens/Profile";
 import { Security } from "./screens/Security";
+import { Appearance } from "./screens/Appearance";
 import { Services } from "./screens/Services";
 import { Cards } from "./screens/Cards";
 import { Loans } from "./screens/Loans";
