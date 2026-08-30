@@ -38,11 +38,11 @@ jobs:
           cd BankingApp
           rm -rf node_modules package-lock.json dist .vite
           npm install
-          echo "=== api.ts content ==="
-          head -3 src/services/api.ts
+          echo "=== api.ts BASE line ==="
+          grep "const BASE" src/services/api.ts
           npm run build
-          echo "=== built JS URL ==="
-          grep -oP 'https://[^"]+onrender\.com[^"]*' dist/assets/*.js | head -3
+          echo "=== built JS URL (first 200 chars) ==="
+          grep -oP '.{0,100}agenticprojects-nmyk\.onrender\.com.{0,100}' dist/assets/*.js | head -1
 
       - uses: actions/upload-pages-artifact@v3
         with:
