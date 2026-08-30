@@ -26,16 +26,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
-          cache-dependency-path: BankingApp/package-lock.json
 
-      - run: rm -rf node_modules/.cache && npm ci
+      - name: Clean install and build
+        run: |
+          cd BankingApp
+          rm -rf node_modules package-lock.json
+          npm install
+          npm run build
 
-      - name: Verify API URL in source
-        run: cat BankingApp/src/services/api.ts | head -3
-      - run: npm run build
-
-      - name: Verify built JS
+      - name: Verify built JS has API URL
         run: grep -o "onrender\.com[^\"]*" BankingApp/dist/assets/*.js | head -3
 
       - uses: actions/upload-pages-artifact@v3
