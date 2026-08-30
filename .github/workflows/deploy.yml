@@ -35,6 +35,9 @@ jobs:
         run: cat BankingApp/src/services/api.ts | head -3
       - run: npm run build
 
+      - name: Verify built JS
+        run: grep -o "onrender\.com[^\"]*" BankingApp/dist/assets/*.js | head -3
+
       - uses: actions/upload-pages-artifact@v3
         with:
           path: BankingApp/dist
