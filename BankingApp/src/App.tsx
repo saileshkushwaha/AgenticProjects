@@ -37,51 +37,58 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function DashboardScreen() { return <Dashboard />; }
+function AccountsScreen() { return <Accounts />; }
+function AccountDetailScreen() { return <AccountDetail />; }
+function TransactionsScreen() { return <Transactions />; }
+function TransfersScreen() { return <Transfers />; }
+function NewApplicationScreen() { return <NewApplication />; }
+function ApplicationDetailScreen() { return <ApplicationDetail />; }
+function ServicesScreen() { return <Services />; }
+function AnalyticsScreen() { return <Analytics />; }
+function CardsScreen() { return <Cards />; }
+function LoansScreen() { return <Loans />; }
+function KycVerificationScreen() { return <KycVerification />; }
+function NotificationsScreen() { return <Notifications />; }
+function ReportsScreen() { return <Reports />; }
+function ProfileScreen() { return <Profile />; }
+function SecurityScreen() { return <Security />; }
+function AppearanceScreen() { return <Appearance />; }
+
 export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route
-        path="/*"
-        element={
-          <ProtectedRoute>
-            <Layout>
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/accounts" element={<Accounts />} />
-                <Route path="/accounts/:id" element={<AccountDetail />} />
-                <Route path="/accounts/checking" element={<Accounts />} />
-                <Route path="/accounts/savings" element={<Accounts />} />
-                <Route path="/accounts/business" element={<Accounts />} />
-                <Route path="/accounts/statements" element={<Accounts />} />
-                <Route path="/transactions" element={<Transactions />} />
-                <Route path="/transactions/history" element={<Transactions />} />
-                <Route path="/transactions/pending" element={<Transactions />} />
-                <Route path="/transactions/recurring" element={<Transactions />} />
-                <Route path="/transfers" element={<Transfers />} />
-                <Route path="/transfers/send" element={<Transfers />} />
-                <Route path="/transfers/receive" element={<Transfers />} />
-                <Route path="/transfers/scheduled" element={<Transfers />} />
-                <Route path="/services" element={<Services />} />
-                <Route path="/applications" element={<NewApplication />} />
-                <Route path="/applications/:id" element={<ApplicationDetail />} />
-                <Route path="/kyc" element={<KycVerification />} />
-                <Route path="/analytics" element={<Analytics />} />
-                <Route path="/cards" element={<Cards />} />
-                <Route path="/loans" element={<Loans />} />
-                <Route path="/notifications" element={<Notifications />} />
-                <Route path="/reports" element={<Reports />} />
-                <Route path="/settings" element={<Appearance />} />
-                <Route path="/security" element={<Security />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/appearance" element={<Appearance />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/" element={<ProtectedRoute><Layout><DashboardScreen /></Layout></ProtectedRoute>} />
+      <Route path="/accounts" element={<ProtectedRoute><Layout><AccountsScreen /></Layout></ProtectedRoute>} />
+      <Route path="/accounts/:id" element={<ProtectedRoute><Layout><AccountDetailScreen /></Layout></ProtectedRoute>} />
+      <Route path="/accounts/checking" element={<ProtectedRoute><Layout><AccountsScreen /></Layout></ProtectedRoute>} />
+      <Route path="/accounts/savings" element={<ProtectedRoute><Layout><AccountsScreen /></Layout></ProtectedRoute>} />
+      <Route path="/accounts/business" element={<ProtectedRoute><Layout><AccountsScreen /></Layout></ProtectedRoute>} />
+      <Route path="/accounts/statements" element={<ProtectedRoute><Layout><AccountsScreen /></Layout></ProtectedRoute>} />
+      <Route path="/transactions" element={<ProtectedRoute><Layout><TransactionsScreen /></Layout></ProtectedRoute>} />
+      <Route path="/transactions/history" element={<ProtectedRoute><Layout><TransactionsScreen /></Layout></ProtectedRoute>} />
+      <Route path="/transactions/pending" element={<ProtectedRoute><Layout><TransactionsScreen /></Layout></ProtectedRoute>} />
+      <Route path="/transactions/recurring" element={<ProtectedRoute><Layout><TransactionsScreen /></Layout></ProtectedRoute>} />
+      <Route path="/transfers" element={<ProtectedRoute><Layout><TransfersScreen /></Layout></ProtectedRoute>} />
+      <Route path="/transfers/send" element={<ProtectedRoute><Layout><TransfersScreen /></Layout></ProtectedRoute>} />
+      <Route path="/transfers/receive" element={<ProtectedRoute><Layout><TransfersScreen /></Layout></ProtectedRoute>} />
+      <Route path="/transfers/scheduled" element={<ProtectedRoute><Layout><TransfersScreen /></Layout></ProtectedRoute>} />
+      <Route path="/services" element={<ProtectedRoute><Layout><ServicesScreen /></Layout></ProtectedRoute>} />
+      <Route path="/applications" element={<ProtectedRoute><Layout><NewApplicationScreen /></Layout></ProtectedRoute>} />
+      <Route path="/applications/:id" element={<ProtectedRoute><Layout><ApplicationDetailScreen /></Layout></ProtectedRoute>} />
+      <Route path="/kyc" element={<ProtectedRoute><Layout><KycVerificationScreen /></Layout></ProtectedRoute>} />
+      <Route path="/analytics" element={<ProtectedRoute><Layout><AnalyticsScreen /></Layout></ProtectedRoute>} />
+      <Route path="/cards" element={<ProtectedRoute><Layout><CardsScreen /></Layout></ProtectedRoute>} />
+      <Route path="/loans" element={<ProtectedRoute><Layout><LoansScreen /></Layout></ProtectedRoute>} />
+      <Route path="/notifications" element={<ProtectedRoute><Layout><NotificationsScreen /></Layout></ProtectedRoute>} />
+      <Route path="/reports" element={<ProtectedRoute><Layout><ReportsScreen /></Layout></ProtectedRoute>} />
+      <Route path="/settings" element={<ProtectedRoute><Layout><AppearanceScreen /></Layout></ProtectedRoute>} />
+      <Route path="/security" element={<ProtectedRoute><Layout><SecurityScreen /></Layout></ProtectedRoute>} />
+      <Route path="/profile" element={<ProtectedRoute><Layout><ProfileScreen /></Layout></ProtectedRoute>} />
+      <Route path="/appearance" element={<ProtectedRoute><Layout><AppearanceScreen /></Layout></ProtectedRoute>} />
+      <Route path="*" element={<ProtectedRoute><Layout><NotFound /></Layout></ProtectedRoute>} />
     </Routes>
   );
 }
