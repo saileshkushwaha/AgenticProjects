@@ -1,12 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { api } from "../services/api";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
-import { formatCurrency } from "../lib/utils";
-import { TrendingUp, TrendingDown, Wallet, PiggyBank, BarChart3, Activity } from "lucide-react";
+import { formatCurrency, formatDate } from "../lib/utils";
+import { TrendingUp, TrendingDown, Wallet, PiggyBank, BarChart3, Activity, ArrowRight } from "lucide-react";
 
 export function Dashboard() {
+  const navigate = useNavigate();
   const { data } = useQuery({ queryKey: ["accounts"], queryFn: api.listAccounts });
+  const { data: txnsData } = useQuery({ queryKey: ["transactions"], queryFn: () => api.listTransactions({ limit: 5 }) });
   const accounts = data?.accounts || [];
+  const recentTxns = txnsData?.transactions || [];
   const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
   const totalSavings = accounts.filter((a) => a.type === "savings").reduce((sum, a) => sum + a.balance, 0);
   const totalChecking = accounts.filter((a) => a.type === "checking").reduce((sum, a) => sum + a.balance, 0);
@@ -85,21 +89,33 @@ export function Dashboard() {
             <CardTitle>Quick Actions</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <button className="w-full rounded-lg border p-3 text-left text-sm hover:bg-muted transition-colors">
-              <div className="font-medium">Transfer funds</div>
-              <div className="text-xs text-muted-foreground">Move money between accounts</div>
+            <button onClick={() => navigate("/transfers")} className="w-full rounded-lg border p-3 text-left text-sm hover:bg-muted transition-colors flex items-center justify-between">
+              <div>
+                <div className="font-medium">Transfer funds</div>
+                <div className="text-xs text-muted-foreground">Move money between accounts</div>
+              </div>
+              <ArrowRight className="h-4 w-4 text-muted-foreground" />
             </button>
-            <button className="w-full rounded-lg border p-3 text-left text-sm hover:bg-muted transition-colors">
-              <div className="font-medium">Pay bills</div>
-              <div className="text-xs text-muted-foreground">Schedule or make payments</div>
+            <button onClick={() => navigate("/transfers/send")} className="w-full rounded-lg border p-3 text-left text-sm hover:bg-muted transition-colors flex items-center justify-between">
+              <div>
+                <div className="font-medium">Send money</div>
+                <div className="text-xs text-muted-foreground">Send to external accounts</div>
+              </div>
+              <ArrowRight className="h-4 w-4 text-muted-foreground" />
             </button>
-            <button className="w-full rounded-lg border p-3 text-left text-sm hover:bg-muted transition-colors">
-              <div className="font-medium">Open new account</div>
-              <div className="text-xs text-muted-foreground">Start saving or investing</div>
+            <button onClick={() => navigate("/applications")} className="w-full rounded-lg border p-3 text-left text-sm hover:bg-muted transition-colors flex items-center justify-between">
+              <div>
+                <div className="font-medium">Open new account</div>
+                <div className="text-xs text-muted-foreground">Start saving or investing</div>
+              </div>
+              <ArrowRight className="h-4 w-4 text-muted-foreground" />
             </button>
-            <button className="w-full rounded-lg border p-3 text-left text-sm hover:bg-muted transition-colors">
-              <div className="font-medium">View statements</div>
-              <div className="text-xs text-muted-foreground">Download monthly statements</div>
+            <button onClick={() => navigate("/reports")} className="w-full rounded-lg border p-3 text-left text-sm hover:bg-muted transition-colors flex items-center justify-between">
+              <div>
+                <div className="font-medium">View statements</div>
+                <div className="text-xs text-muted-foreground">Download monthly statements</div>
+              </div>
+              <ArrowRight className="h-4 w-4 text-muted-foreground" />
             </button>
           </CardContent>
         </Card>
@@ -113,7 +129,7 @@ export function Dashboard() {
               <p className="text-sm text-muted-foreground py-4 text-center">No accounts yet. Open your first account to get started.</p>
             ) : (
               accounts.map((a) => (
-                <div key={a.id} className="flex items-center justify-between rounded-lg border p-3 hover:bg-muted/50 transition-colors">
+                <div key={a.id} onClick={() => navigate(`/accounts/${a.id}`)} className="flex items-center justify-between rounded-lg border p-3 hover:bg-muted/50 transition-colors cursor-pointer">
                   <div>
                     <div className="font-medium text-sm">{a.name}</div>
                     <div className="text-xs text-muted-foreground capitalize">{a.type} account</div>
@@ -128,39 +144,27 @@ export function Dashboard() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Recent Activity</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="flex items-center justify-between">Recent Activity <button onClick={() => navigate("/transactions")} className="text-xs text-primary hover:underline">View all</button></CardTitle></CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <div className="flex items-center gap-3 rounded-lg border p-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
-                  <TrendingUp className="h-4 w-4 text-green-600" />
-                </div>
-                <div className="flex-1">
-                  <div className="text-sm font-medium">Salary Deposit</div>
-                  <div className="text-xs text-muted-foreground">Today, 9:00 AM</div>
-                </div>
-                <div className="font-semibold text-green-600">+$4,250.00</div>
-              </div>
-              <div className="flex items-center gap-3 rounded-lg border p-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100">
-                  <TrendingDown className="h-4 w-4 text-red-600" />
-                </div>
-                <div className="flex-1">
-                  <div className="text-sm font-medium">Rent Payment</div>
-                  <div className="text-xs text-muted-foreground">Yesterday, 2:00 PM</div>
-                </div>
-                <div className="font-semibold text-red-600">-$1,200.00</div>
-              </div>
-              <div className="flex items-center gap-3 rounded-lg border p-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
-                  <Wallet className="h-4 w-4 text-blue-600" />
-                </div>
-                <div className="flex-1">
-                  <div className="text-sm font-medium">Savings Transfer</div>
-                  <div className="text-xs text-muted-foreground">Aug 28, 10:00 AM</div>
-                </div>
-                <div className="font-semibold text-blue-600">$500.00</div>
-              </div>
+              {recentTxns.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-4 text-center">No recent transactions</p>
+              ) : (
+                recentTxns.map((t) => (
+                  <div key={t.id} className="flex items-center gap-3 rounded-lg border p-3">
+                    <div className={`flex h-8 w-8 items-center justify-center rounded-full ${t.type === "credit" ? "bg-green-100" : "bg-red-100"}`}>
+                      {t.type === "credit" ? <TrendingUp className="h-4 w-4 text-green-600" /> : <TrendingDown className="h-4 w-4 text-red-600" />}
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-sm font-medium">{t.description}</div>
+                      <div className="text-xs text-muted-foreground">{formatDate(t.date)}</div>
+                    </div>
+                    <div className={`font-semibold ${t.type === "credit" ? "text-green-600" : "text-red-600"}`}>
+                      {t.type === "credit" ? "+" : "-"}{formatCurrency(t.amount)}
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </CardContent>
         </Card>

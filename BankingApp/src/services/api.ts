@@ -82,6 +82,8 @@ export const api = {
   createAccount: (body: { type: string; name: string }) =>
     http<Account>("/accounts", { method: "POST", body: JSON.stringify(body) }),
   getAccount: (id: string) => http<Account & { transactions: Transaction[] }>(`/accounts/${id}`),
+  deposit: (id: string, amount: number) =>
+    http<{ id: string; balance: number; transaction: any }>(`/accounts/${id}/deposit`, { method: "POST", body: JSON.stringify({ amount }) }),
 
   listTransactions: (params?: { accountId?: string; page?: number; limit?: number }) => {
     const qs = new URLSearchParams();
