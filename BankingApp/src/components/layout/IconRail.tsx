@@ -9,21 +9,28 @@ import {
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
-const ICON_NAV = [
-  { to: "/", icon: LayoutDashboard, label: "Dashboard", category: "dashboard" },
-  { to: "/accounts", icon: Wallet, label: "Accounts", category: "accounts" },
-  { to: "/transactions", icon: ArrowLeftRight, label: "Transactions", category: "transactions" },
-  { to: "/transfers", icon: CreditCard, label: "Transfers", category: "transfers" },
-  { to: "/services", icon: Grid3X3, label: "Services", category: "services" },
-  { to: "/settings", icon: Settings, label: "Settings", category: "settings" },
+export interface CategoryDef {
+  id: string;
+  icon: React.ElementType;
+  label: string;
+  basePath: string;
+}
+
+export const CATEGORIES: CategoryDef[] = [
+  { id: "dashboard", icon: LayoutDashboard, label: "Dashboard", basePath: "/" },
+  { id: "accounts", icon: Wallet, label: "Accounts", basePath: "/accounts" },
+  { id: "transactions", icon: ArrowLeftRight, label: "Transactions", basePath: "/transactions" },
+  { id: "transfers", icon: CreditCard, label: "Transfers", basePath: "/transfers" },
+  { id: "services", icon: Grid3X3, label: "Services", basePath: "/services" },
+  { id: "settings", icon: Settings, label: "Settings", basePath: "/settings" },
 ];
 
-export function IconRail() {
+export function IconRail({ activeCategory, onSelect }: { activeCategory: string; onSelect: (id: string) => void }) {
   const location = useLocation();
 
-  const isActive = (to: string) => {
-    if (to === "/") return location.pathname === "/";
-    return location.pathname.startsWith(to);
+  const isActive = (basePath: string) => {
+    if (basePath === "/") return location.pathname === "/";
+    return location.pathname === basePath || location.pathname.startsWith(basePath + "/");
   };
 
   return (
@@ -31,27 +38,32 @@ export function IconRail() {
       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 text-white font-bold text-sm mb-3">
         B
       </div>
-      {ICON_NAV.map((item) => (
-        <NavLink
-          key={item.to}
-          to={item.to}
-          className={cn(
-            "flex h-11 w-11 items-center justify-center rounded-lg transition-all relative group",
-            isActive(item.to)
-              ? "bg-white/20 text-white shadow-lg"
-              : "text-white/60 hover:bg-white/10 hover:text-white"
-          )}
-          title={item.label}
-        >
-          <item.icon className="h-5 w-5" />
-          {isActive(item.to) && (
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 h-7 w-1 rounded-r-full bg-white" />
-          )}
-          <div className="absolute left-full ml-3 hidden group-hover:block z-50 rounded-md bg-gray-900 px-3 py-1.5 text-xs text-white whitespace-nowrap shadow-lg">
-            {item.label}
-          </div>
-        </NavLink>
-      ))}
+      {CATEGORIES.map((cat) => {
+        const active = isActive(cat.basePath);
+        const isSelected = activeCategory === cat.id;
+        return (
+          <NavLink
+            key={cat.id}
+            to={cat.basePath}
+            onClick={() => onSelect(cat.id)}
+            className={cn(
+              "flex h-11 w-11 items-center justify-center rounded-lg transition-all relative group",
+              active || isSelected
+                ? "bg-white/20 text-white shadow-lg"
+                : "text-white/60 hover:bg-white/10 hover:text-white"
+            )}
+            title={cat.label}
+          >
+            <cat.icon className="h-5 w-5" />
+            {(active || isSelected) && (
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 h-7 w-1 rounded-r-full bg-white" />
+            )}
+            <div className="absolute left-full ml-3 hidden group-hover:block z-50 rounded-md bg-gray-900 px-3 py-1.5 text-xs text-white whitespace-nowrap shadow-lg">
+              {cat.label}
+            </div>
+          </NavLink>
+        );
+      })}
     </div>
   );
 }

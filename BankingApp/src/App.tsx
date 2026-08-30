@@ -15,9 +15,6 @@ import { Settings } from "./screens/Settings";
 import { Analytics } from "./screens/Analytics";
 import { KycVerification } from "./screens/KycVerification";
 import { Reports } from "./screens/Reports";
-import { Profile } from "./screens/Profile";
-import { Security } from "./screens/Security";
-import { Appearance } from "./screens/Appearance";
 import { Services } from "./screens/Services";
 import { Cards } from "./screens/Cards";
 import { Loans } from "./screens/Loans";
@@ -74,9 +71,10 @@ export default function App() {
                 <Route path="/loans" element={<Loans />} />
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/settings" element={<Settings />} />
-                <Route path="/settings/security" element={<Security />} />
-                <Route path="/settings/profile" element={<Profile />} />
-                <Route path="/settings/appearance" element={<Appearance />} />
+                <Route path="/settings/notifications" element={<Settings />} />
+                <Route path="/settings/security" element={<Settings />} />
+                <Route path="/settings/profile" element={<Settings />} />
+                <Route path="/settings/appearance" element={<Settings />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Layout>
