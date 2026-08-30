@@ -25,24 +25,60 @@ async function seedDatabase() {
 
     const userId = randomUUID();
     const passwordHash = await bcrypt.hash("demo1234", 12);
-    await db.insert(users).values({ id: userId, email: "demo@bank.com", passwordHash, fullName: "Demo User", role: "customer" });
+    await db.insert(users).values([
+      { id: userId, email: "demo@bank.com", passwordHash, fullName: "Demo User", role: "customer" },
+      { id: randomUUID(), email: "officer@bank.com", passwordHash: await bcrypt.hash("officer123", 12), fullName: "Officer Smith", role: "officer" },
+    ]);
 
     const checkingId = randomUUID();
     const savingsId = randomUUID();
+    const businessId = randomUUID();
     await db.insert(accounts).values([
       { id: checkingId, userId, type: "checking", name: "Primary Checking", balance: 450000, currency: "USD", status: "active" },
       { id: savingsId, userId, type: "savings", name: "Emergency Savings", balance: 300000, currency: "USD", status: "active" },
+      { id: businessId, userId, type: "business", name: "Business Account", balance: 1250000, currency: "USD", status: "active" },
     ]);
 
     const now = new Date();
+    const yesterday = new Date(Date.now() - 86400000);
+    const lastWeek = new Date(Date.now() - 7 * 86400000);
+    const lastMonth = new Date(Date.now() - 30 * 86400000);
+
     await db.insert(transactions).values([
-      { id: randomUUID(), accountId: checkingId, type: "credit", amount: 500000, description: "Initial deposit", category: "income", date: now, balanceAfter: 500000 },
-      { id: randomUUID(), accountId: savingsId, type: "credit", amount: 250000, description: "Savings deposit", category: "income", date: now, balanceAfter: 250000 },
-      { id: randomUUID(), accountId: checkingId, type: "debit", amount: 50000, description: "Transfer: Monthly savings", category: "transfer", date: now, balanceAfter: 450000 },
-      { id: randomUUID(), accountId: savingsId, type: "credit", amount: 50000, description: "Transfer received: Monthly savings", category: "transfer", date: now, balanceAfter: 300000 },
+      { id: randomUUID(), accountId: checkingId, type: "credit", amount: 500000, description: "Salary Deposit", category: "income", date: now, balanceAfter: 500000 },
+      { id: randomUUID(), accountId: checkingId, type: "debit", amount: 120000, description: "Rent Payment", category: "housing", date: now, balanceAfter: 380000 },
+      { id: randomUUID(), accountId: checkingId, type: "debit", amount: 4500, description: "Grocery Store", category: "food", date: yesterday, balanceAfter: 375500 },
+      { id: randomUUID(), accountId: checkingId, type: "debit", amount: 1200, description: "Netflix Subscription", category: "entertainment", date: yesterday, balanceAfter: 374300 },
+      { id: randomUUID(), accountId: checkingId, type: "credit", amount: 25000, description: "Freelance Payment", category: "income", date: lastWeek, balanceAfter: 399300 },
+      { id: randomUUID(), accountId: checkingId, type: "debit", amount: 8900, description: "Electric Bill", category: "utilities", date: lastWeek, balanceAfter: 390400 },
+      { id: randomUUID(), accountId: checkingId, type: "debit", amount: 3500, description: "Internet Bill", category: "utilities", date: lastMonth, balanceAfter: 420000 },
+      { id: randomUUID(), accountId: savingsId, type: "credit", amount: 250000, description: "Initial Savings Deposit", category: "income", date: lastMonth, balanceAfter: 250000 },
+      { id: randomUUID(), accountId: savingsId, type: "credit", amount: 50000, description: "Transfer from Checking", category: "transfer", date: lastWeek, balanceAfter: 300000 },
+      { id: randomUUID(), accountId: businessId, type: "credit", amount: 1500000, description: "Client Payment - Project A", category: "income", date: now, balanceAfter: 1500000 },
+      { id: randomUUID(), accountId: businessId, type: "debit", amount: 250000, description: "Office Rent", category: "housing", date: yesterday, balanceAfter: 1250000 },
+      { id: randomUUID(), accountId: checkingId, type: "debit", amount: 50000, description: "Transfer: Monthly savings", category: "transfer", date: lastWeek, balanceAfter: 450000 },
+      { id: randomUUID(), accountId: savingsId, type: "credit", amount: 50000, description: "Transfer received: Monthly savings", category: "transfer", date: lastWeek, balanceAfter: 300000 },
     ]);
 
-    await db.insert(auditLogs).values({ id: randomUUID(), userId, action: "seed_data", entityType: "users", entityId: userId, metadata: JSON.stringify({ seeded: true }) });
+    const transferId = randomUUID();
+    await db.insert(transfers).values([
+      { id: transferId, fromAccountId: checkingId, toAccountId: savingsId, amount: 50000, transferType: "internal", status: "completed", reference: "Monthly savings", createdAt: lastWeek },
+      { id: randomUUID(), fromAccountId: checkingId, toAccountId: null, externalRouting: "021000021", externalAccount: "987654321", amount: 25000, transferType: "ach", status: "completed", reference: "Rent payment", createdAt: yesterday },
+      { id: randomUUID(), fromAccountId: checkingId, toAccountId: savingsId, amount: 100000, transferType: "internal", status: "pending", reference: "Future savings", createdAt: now },
+    ]);
+
+    await db.insert(kycRecords).values([
+      { id: randomUUID(), userId, status: "verified", documentType: "Passport", vendor: "persona", score: 91, verifiedAt: now },
+    ]);
+
+    await db.insert(auditLogs).values([
+      { id: randomUUID(), userId, action: "user_registered", entityType: "users", entityId: userId, metadata: JSON.stringify({ seeded: true }) },
+      { id: randomUUID(), userId, action: "account_created", entityType: "accounts", entityId: checkingId, metadata: JSON.stringify({ type: "checking" }) },
+      { id: randomUUID(), userId, action: "account_created", entityType: "accounts", entityId: savingsId, metadata: JSON.stringify({ type: "savings" }) },
+      { id: randomUUID(), userId, action: "kyc_verified", entityType: "kyc_records", metadata: JSON.stringify({ score: 91 }) },
+    ]);
+
+    console.log("Database seeded successfully");
   } catch (e) {
     console.error("Seed failed:", e);
   }
