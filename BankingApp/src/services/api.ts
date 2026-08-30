@@ -1,4 +1,4 @@
-const BASE = import.meta.env.VITE_API_URL || "";
+const BASE = import.meta.env.VITE_API_URL || "https://agenticprojects-nmyk.onrender.com/api";
 
 interface AuthUser {
   id: string;
