@@ -402,16 +402,6 @@ function createApp() {
     res.json({ id: req.params.id, status: decision, decidedAt: new Date().toISOString() });
   });
 
-  // ---- Serve built SPA ----
-  const distDir = path.join(__dirname, "..", "dist");
-  if (existsSync(distDir)) {
-    app.use(express.static(distDir));
-    app.get("*", (req, res) => {
-      if (req.path.startsWith("/api/")) return res.status(404).json({ error: "not found" });
-      res.sendFile(path.join(distDir, "index.html"));
-    });
-  }
-
   // ---- Notifications ----
   app.get("/api/notifications", authMiddleware, async (req, res) => {
     const logs = await db.select().from(auditLogs)
@@ -630,6 +620,16 @@ function createApp() {
     });
     res.json({ statements });
   });
+
+  // ---- Serve built SPA (MUST BE LAST) ----
+  const distDir = path.join(__dirname, "..", "dist");
+  if (existsSync(distDir)) {
+    app.use(express.static(distDir));
+    app.get("*", (req, res) => {
+      if (req.path.startsWith("/api/")) return res.status(404).json({ error: "not found" });
+      res.sendFile(path.join(distDir, "index.html"));
+    });
+  }
 
   return app;
 }
