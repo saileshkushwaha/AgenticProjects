@@ -22,6 +22,12 @@ jobs:
         working-directory: BankingApp
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Verify git commit
+        run: git log --oneline -3
 
       - uses: actions/setup-node@v4
         with:
@@ -30,12 +36,12 @@ jobs:
       - name: Clean install and build
         run: |
           cd BankingApp
-          rm -rf node_modules package-lock.json
+          rm -rf node_modules package-lock.json dist
           npm install
           npm run build
 
       - name: Verify built JS has API URL
-        run: grep -o "onrender\.com[^\"]*" BankingApp/dist/assets/*.js | head -3
+        run: grep -o 'onrender\.com[^"]*' BankingApp/dist/assets/*.js | head -3
 
       - uses: actions/upload-pages-artifact@v3
         with:
