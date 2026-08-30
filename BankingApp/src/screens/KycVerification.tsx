@@ -4,7 +4,7 @@ import { api } from "../services/api";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
-import { Shield, FileCheck, UserCheck, CheckCircle, XCircle, Upload } from "lucide-react";
+import { Shield, FileCheck, UserCheck, CheckCircle, Upload } from "lucide-react";
 
 export function KycVerification() {
   const [step, setStep] = useState(0);

@@ -7,7 +7,6 @@ import { BarChart3, TrendingUp, PieChart, Activity } from "lucide-react";
 export function Analytics() {
   const { data } = useQuery({ queryKey: ["accounts"], queryFn: api.listAccounts });
   const accounts = data?.accounts || [];
-  const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
 
   const monthlyData = [
     { month: "Jan", income: 4200, expenses: 2800 },

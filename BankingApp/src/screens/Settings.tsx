@@ -4,7 +4,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { useAuthStore } from "../stores/authStore";
-import { User, Mail, Phone, MapPin, Shield, Bell, Moon, Globe } from "lucide-react";
+import { User, Shield, Bell, Moon } from "lucide-react";
 
 export function Settings() {
   const user = useAuthStore((s) => s.user);

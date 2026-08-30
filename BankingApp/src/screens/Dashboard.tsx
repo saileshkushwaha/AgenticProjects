@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../services/api";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
-import { formatCurrency, formatDate } from "../lib/utils";
+import { formatCurrency } from "../lib/utils";
 import { TrendingUp, TrendingDown, Wallet, PiggyBank, BarChart3, Activity } from "lucide-react";
 
 export function Dashboard() {
