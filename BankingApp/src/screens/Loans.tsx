@@ -3,7 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import { Building2, Car, Home, GraduationCap, Briefcase, Calculator } from "lucide-react";
+import { Car, Home, GraduationCap, Briefcase, Calculator } from "lucide-react";
 
 const LOAN_PRODUCTS = [
   { id: "personal", title: "Personal Loan", rate: "8.5%", max: "$50,000", icon: Briefcase, color: "bg-blue-100 text-blue-600" },
