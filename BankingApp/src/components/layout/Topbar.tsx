@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { Bell, Search, Moon, Sun, User, ChevronDown, LogOut, Settings, Menu } from "lucide-react";
+import { useState } from "react";
 import { useAuthStore } from "../../stores/authStore";
 import { useNavigate } from "react-router-dom";
 
@@ -16,13 +16,14 @@ export function Topbar({ onToggleNav, navOpen }: TopbarProps) {
 
   return (
     <header className="flex h-12 items-center gap-3 border-b bg-card px-4">
-      <button
-        onClick={onToggleNav}
-        className="flex h-8 w-8 items-center justify-center rounded-lg hover:bg-muted transition-colors"
-        title={navOpen ? "Collapse navigation" : "Expand navigation"}
-      >
-        <Menu className="h-4 w-4" />
-      </button>
+      {!navOpen && (
+        <button
+          onClick={onToggleNav}
+          className="flex h-8 w-8 items-center justify-center rounded-lg hover:bg-muted transition-colors"
+        >
+          <Menu className="h-4 w-4" />
+        </button>
+      )}
 
       <div className="relative flex-1 max-w-md">
         <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
@@ -36,12 +37,14 @@ export function Topbar({ onToggleNav, navOpen }: TopbarProps) {
         <button
           onClick={() => setDarkMode(!darkMode)}
           className="flex h-8 w-8 items-center justify-center rounded-lg hover:bg-muted transition-colors"
-          title={darkMode ? "Light mode" : "Dark mode"}
         >
           {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </button>
 
-        <button className="relative flex h-8 w-8 items-center justify-center rounded-lg hover:bg-muted transition-colors">
+        <button
+          onClick={() => navigate("/notifications")}
+          className="relative flex h-8 w-8 items-center justify-center rounded-lg hover:bg-muted transition-colors"
+        >
           <Bell className="h-4 w-4" />
           <span className="absolute right-1.5 top-1.5 flex h-1.5 w-1.5 rounded-full bg-destructive" />
         </button>
@@ -64,11 +67,17 @@ export function Topbar({ onToggleNav, navOpen }: TopbarProps) {
             <>
               <div className="fixed inset-0 z-40" onClick={() => setShowUserMenu(false)} />
               <div className="absolute right-0 top-full z-50 mt-1 w-44 rounded-lg border bg-card p-1 shadow-lg">
-                <button className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-sm hover:bg-muted" onClick={() => { setShowUserMenu(false); navigate("/settings/profile"); }}>
+                <button
+                  className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-sm hover:bg-muted"
+                  onClick={() => { setShowUserMenu(false); navigate("/profile"); }}
+                >
                   <User className="h-3.5 w-3.5" />
                   Profile
                 </button>
-                <button className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-sm hover:bg-muted" onClick={() => { setShowUserMenu(false); navigate("/settings"); }}>
+                <button
+                  className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-sm hover:bg-muted"
+                  onClick={() => { setShowUserMenu(false); navigate("/settings"); }}
+                >
                   <Settings className="h-3.5 w-3.5" />
                   Settings
                 </button>

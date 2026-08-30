@@ -39,9 +39,6 @@ export function Transfers() {
       setFromAccountId("");
       setToAccountId("");
     },
-    onError: (err) => {
-      alert(err instanceof Error ? err.message : "Transfer failed");
-    },
   });
 
   const filteredTransfers = (() => {

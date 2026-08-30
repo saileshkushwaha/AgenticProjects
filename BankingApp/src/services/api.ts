@@ -1,22 +1,4 @@
-const BASE = import.meta.env.VITE_API_URL || "https://agenticprojects-nmyk.onrender.com/api";
-
-interface AuthUser {
-  id: string;
-  email: string;
-  fullName: string;
-  role: string;
-}
-
-interface AuthResponse {
-  token: string;
-  user: AuthUser;
-}
-
-interface DepositResponse {
-  id: string;
-  balance: number;
-  transaction: Transaction;
-}
+const BASE = "https://agenticprojects-nmyk.onrender.com/api";
 
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
   const token = localStorage.getItem("token");
@@ -173,17 +155,17 @@ export interface UserProfile {
 
 export const api = {
   register: (body: { email: string; password: string; fullName: string }) =>
-    http<AuthResponse>("/auth/register", { method: "POST", body: JSON.stringify(body) }),
+    http<{ token: string; user: any }>("/auth/register", { method: "POST", body: JSON.stringify(body) }),
   login: (body: { email: string; password: string }) =>
-    http<AuthResponse>("/auth/login", { method: "POST", body: JSON.stringify(body) }),
-  me: () => http<AuthUser>("/auth/me"),
+    http<{ token: string; user: any }>("/auth/login", { method: "POST", body: JSON.stringify(body) }),
+  me: () => http<any>("/auth/me"),
 
   listAccounts: () => http<{ accounts: Account[] }>("/accounts"),
   createAccount: (body: { type: string; name: string }) =>
     http<Account>("/accounts", { method: "POST", body: JSON.stringify(body) }),
   getAccount: (id: string) => http<Account & { transactions: Transaction[] }>(`/accounts/${id}`),
   deposit: (id: string, amount: number) =>
-    http<DepositResponse>(`/accounts/${id}/deposit`, { method: "POST", body: JSON.stringify({ amount }) }),
+    http<{ id: string; balance: number; transaction: Transaction }>(`/accounts/${id}/deposit`, { method: "POST", body: JSON.stringify({ amount }) }),
 
   listTransactions: (params?: { accountId?: string; page?: number; limit?: number }) => {
     const qs = new URLSearchParams();

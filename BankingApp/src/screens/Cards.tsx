@@ -1,23 +1,16 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../services/api";
-import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
+
 import { Button } from "../components/ui/button";
-import { CreditCard, Plus, Settings, Lock, Eye, EyeOff } from "lucide-react";
+import { CreditCard, Plus, Eye, EyeOff } from "lucide-react";
 
 export function Cards() {
   const [showNumbers, setShowNumbers] = useState<Record<number, boolean>>({});
-
-  const { data } = useQuery({
-    queryKey: ["cards"],
-    queryFn: api.listCards,
-  });
-
+  const { data } = useQuery({ queryKey: ["cards"], queryFn: api.listCards });
   const cards = data?.cards || [];
 
-  const toggleNumber = (id: number) => {
-    setShowNumbers((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
+  const toggleNumber = (id: number) => setShowNumbers((prev) => ({ ...prev, [id]: !prev[id] }));
 
   return (
     <div className="space-y-6">
@@ -28,7 +21,6 @@ export function Cards() {
         </div>
         <Button><Plus className="mr-2 h-4 w-4" /> Request New Card</Button>
       </div>
-
       <div className="grid gap-6 lg:grid-cols-2">
         {cards.length === 0 ? (
           <p className="text-sm text-muted-foreground py-8 text-center col-span-full">No cards found.</p>
@@ -61,34 +53,6 @@ export function Cards() {
           ))
         )}
       </div>
-
-      <Card>
-        <CardHeader><CardTitle>Card Settings</CardTitle></CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between rounded-lg border p-4">
-              <div className="flex items-center gap-3">
-                <Lock className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <div className="font-medium text-sm">Freeze Card</div>
-                  <div className="text-xs text-muted-foreground">Temporarily disable your card</div>
-                </div>
-              </div>
-              <input type="checkbox" className="h-4 w-4 rounded border-gray-300" />
-            </div>
-            <div className="flex items-center justify-between rounded-lg border p-4">
-              <div className="flex items-center gap-3">
-                <Settings className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <div className="font-medium text-sm">Change PIN</div>
-                  <div className="text-xs text-muted-foreground">Update your card PIN</div>
-                </div>
-              </div>
-              <Button variant="outline" size="sm">Change</Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

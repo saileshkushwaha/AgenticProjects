@@ -1,5 +1,4 @@
-import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
-import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
 import { Shield, User, BarChart3, CreditCard, Building2, FileText, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -21,7 +20,6 @@ export function Services() {
         <h1 className="text-2xl font-bold">Services</h1>
         <p className="text-muted-foreground">Explore our range of banking services</p>
       </div>
-
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {SERVICES.map((service) => (
           <Card key={service.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => navigate(service.to)}>
@@ -40,26 +38,6 @@ export function Services() {
           </Card>
         ))}
       </div>
-
-      <Card>
-        <CardHeader><CardTitle>Quick Actions</CardTitle></CardHeader>
-        <CardContent>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <Button variant="outline" className="justify-start" onClick={() => navigate("/applications")}>
-              <User className="mr-2 h-4 w-4" /> Open New Account
-            </Button>
-            <Button variant="outline" className="justify-start" onClick={() => navigate("/kyc")}>
-              <Shield className="mr-2 h-4 w-4" /> Verify Identity
-            </Button>
-            <Button variant="outline" className="justify-start" onClick={() => navigate("/transfers/send")}>
-              <ArrowRight className="mr-2 h-4 w-4" /> Send Money
-            </Button>
-            <Button variant="outline" className="justify-start" onClick={() => navigate("/reports")}>
-              <FileText className="mr-2 h-4 w-4" /> View Reports
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

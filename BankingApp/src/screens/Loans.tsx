@@ -13,11 +13,7 @@ export function Loans() {
   const [loanTerm, setLoanTerm] = useState("12");
   const [selectedRate, setSelectedRate] = useState(0.085);
 
-  const { data } = useQuery({
-    queryKey: ["loan-products"],
-    queryFn: api.listLoanProducts,
-  });
-
+  const { data } = useQuery({ queryKey: ["loan-products"], queryFn: api.listLoanProducts });
   const products = data?.products || [];
 
   const monthlyPayment = (() => {
@@ -39,7 +35,6 @@ export function Loans() {
           <Calculator className="mr-2 h-4 w-4" /> Loan Calculator
         </Button>
       </div>
-
       {showCalculator && (
         <Card>
           <CardHeader><CardTitle>Loan Calculator</CardTitle></CardHeader>
@@ -63,7 +58,6 @@ export function Loans() {
           </CardContent>
         </Card>
       )}
-
       <div className="grid gap-4 sm:grid-cols-2">
         {products.length === 0 ? (
           <p className="text-sm text-muted-foreground py-8 text-center col-span-full">No loan products available.</p>

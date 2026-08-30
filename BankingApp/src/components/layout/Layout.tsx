@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { IconRail, getActiveCategory } from "./IconRail";
-import { NavPanel } from "./NavPanel";
+import { Sidebar, getActiveCategory } from "./Sidebar";
 import { Topbar } from "./Topbar";
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -15,11 +14,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <IconRail activeCategory={activeCategory} onSelect={setActiveCategory} />
-      {navOpen && <NavPanel activeCategory={activeCategory} />}
+      <Sidebar activeCategory={activeCategory} onToggleNav={() => setNavOpen(!navOpen)} navOpen={navOpen} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar onToggleNav={() => setNavOpen(!navOpen)} navOpen={navOpen} />
-        <main className="flex-1 overflow-auto bg-muted/30 p-4 lg:p-6">{children}</main>
+        <main className="flex-1 overflow-auto bg-background p-4 lg:p-6">{children}</main>
       </div>
     </div>
   );
