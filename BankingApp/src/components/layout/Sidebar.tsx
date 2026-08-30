@@ -46,15 +46,28 @@ export const CATEGORIES: CategoryDef[] = [
 ];
 
 export function getActiveCategory(pathname: string): string {
-  if (pathname === "/") return "dashboard";
+  if (pathname === "/" || pathname === "") return "dashboard";
   const segments = pathname.split("/").filter(Boolean);
   const firstSegment = segments[0] || "dashboard";
-  if (firstSegment === "applications" || firstSegment === "kyc" || firstSegment === "analytics" || firstSegment === "cards" || firstSegment === "loans") {
+
+  // Services sub-routes
+  const servicesRoutes = ["applications", "kyc", "analytics", "cards", "loans", "services"];
+  if (servicesRoutes.includes(firstSegment)) {
     return "services";
   }
-  if (firstSegment === "notifications" || firstSegment === "security" || firstSegment === "profile" || firstSegment === "appearance") {
+
+  // Settings sub-routes
+  const settingsRoutes = ["notifications", "security", "profile", "appearance", "settings"];
+  if (settingsRoutes.includes(firstSegment)) {
     return "settings";
   }
+
+  // Dashboard sub-routes
+  const dashboardRoutes = ["reports"];
+  if (dashboardRoutes.includes(firstSegment)) {
+    return "dashboard";
+  }
+
   const match = CATEGORIES.find((c) => c.basePath === "/" + firstSegment);
   return match ? match.id : "dashboard";
 }
