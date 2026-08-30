@@ -101,13 +101,13 @@ export function Settings() {
                   <Button variant="outline" size="sm">Enable</Button>
                 </div>
                 <div className="flex items-center justify-between rounded-lg border p-4">
-                  <div className="flex items-center gap-3">
-                    <Mail className="h-5 w-5 text-blue-600" />
-                    <div>
-                      <div className="font-medium text-sm">Email Notifications</div>
-                      <div className="text-xs text-muted-foreground">Receive security alerts via email</div>
-                    </div>
+                <div className="flex items-center gap-3">
+                  <Shield className="h-5 w-5 text-green-600" />
+                  <div>
+                    <div className="font-medium text-sm">Email Notifications</div>
+                    <div className="text-xs text-muted-foreground">Receive security alerts via email</div>
                   </div>
+                </div>
                   <Button variant="outline" size="sm">Enabled</Button>
                 </div>
               </CardContent>
