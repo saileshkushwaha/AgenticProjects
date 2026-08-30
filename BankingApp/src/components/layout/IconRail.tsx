@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Wallet,
@@ -25,13 +25,20 @@ export const CATEGORIES: CategoryDef[] = [
   { id: "settings", icon: Settings, label: "Settings", basePath: "/settings" },
 ];
 
+export function getActiveCategory(pathname: string): string {
+  if (pathname === "/") return "dashboard";
+  const segments = pathname.split("/").filter(Boolean);
+  const firstSegment = segments[0] || "dashboard";
+  const match = CATEGORIES.find((c) => c.basePath === "/" + firstSegment);
+  return match ? match.id : "dashboard";
+}
+
 export function IconRail({ activeCategory, onSelect }: { activeCategory: string; onSelect: (id: string) => void }) {
   const location = useLocation();
+  const navigate = useNavigate();
 
-  const isActive = (basePath: string) => {
-    if (basePath === "/") return location.pathname === "/";
-    return location.pathname === basePath || location.pathname.startsWith(basePath + "/");
-  };
+  const computedActive = getActiveCategory(location.pathname);
+  const currentActive = activeCategory || computedActive;
 
   return (
     <div className="flex h-full w-16 flex-col items-center border-r bg-[#1b1b2f] py-3 gap-1">
@@ -39,29 +46,30 @@ export function IconRail({ activeCategory, onSelect }: { activeCategory: string;
         B
       </div>
       {CATEGORIES.map((cat) => {
-        const active = isActive(cat.basePath);
-        const isSelected = activeCategory === cat.id;
+        const isActive = currentActive === cat.id;
         return (
-          <NavLink
+          <button
             key={cat.id}
-            to={cat.basePath}
-            onClick={() => onSelect(cat.id)}
+            onClick={() => {
+              onSelect(cat.id);
+              navigate(cat.basePath);
+            }}
             className={cn(
               "flex h-11 w-11 items-center justify-center rounded-lg transition-all relative group",
-              active || isSelected
+              isActive
                 ? "bg-white/20 text-white shadow-lg"
                 : "text-white/60 hover:bg-white/10 hover:text-white"
             )}
             title={cat.label}
           >
             <cat.icon className="h-5 w-5" />
-            {(active || isSelected) && (
+            {isActive && (
               <div className="absolute left-0 top-1/2 -translate-y-1/2 h-7 w-1 rounded-r-full bg-white" />
             )}
             <div className="absolute left-full ml-3 hidden group-hover:block z-50 rounded-md bg-gray-900 px-3 py-1.5 text-xs text-white whitespace-nowrap shadow-lg">
               {cat.label}
             </div>
-          </NavLink>
+          </button>
         );
       })}
     </div>

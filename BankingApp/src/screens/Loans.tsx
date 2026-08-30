@@ -1,25 +1,28 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "../services/api";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import { Car, Home, GraduationCap, Briefcase, Calculator } from "lucide-react";
-
-const LOAN_PRODUCTS = [
-  { id: "personal", title: "Personal Loan", rate: "8.5%", max: "$50,000", icon: Briefcase, color: "bg-blue-100 text-blue-600" },
-  { id: "auto", title: "Auto Loan", rate: "5.9%", max: "$100,000", icon: Car, color: "bg-green-100 text-green-600" },
-  { id: "home", title: "Home Loan", rate: "6.5%", max: "$1,000,000", icon: Home, color: "bg-purple-100 text-purple-600" },
-  { id: "education", title: "Education Loan", rate: "4.5%", max: "$200,000", icon: GraduationCap, color: "bg-amber-100 text-amber-600" },
-];
+import { Calculator, CreditCard } from "lucide-react";
 
 export function Loans() {
   const [showCalculator, setShowCalculator] = useState(false);
   const [loanAmount, setLoanAmount] = useState("10000");
   const [loanTerm, setLoanTerm] = useState("12");
+  const [selectedRate, setSelectedRate] = useState(0.085);
+
+  const { data } = useQuery({
+    queryKey: ["loan-products"],
+    queryFn: api.listLoanProducts,
+  });
+
+  const products = data?.products || [];
 
   const monthlyPayment = (() => {
     const principal = parseFloat(loanAmount) || 0;
-    const rate = 0.085 / 12;
+    const rate = selectedRate / 12;
     const n = parseInt(loanTerm) || 1;
     if (principal === 0 || n === 0) return 0;
     return (principal * rate * Math.pow(1 + rate, n)) / (Math.pow(1 + rate, n) - 1);
@@ -62,22 +65,29 @@ export function Loans() {
       )}
 
       <div className="grid gap-4 sm:grid-cols-2">
-        {LOAN_PRODUCTS.map((loan) => (
-          <Card key={loan.id}>
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${loan.color}`}>
-                  <loan.icon className="h-6 w-6" />
+        {products.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-8 text-center col-span-full">No loan products available.</p>
+        ) : (
+          products.map((loan) => (
+            <Card key={loan.id}>
+              <CardContent className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                    <CreditCard className="h-6 w-6 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-semibold mb-1">{loan.title}</div>
+                    <div className="text-sm text-muted-foreground">From {loan.rate} APR • Up to {loan.maxDisplay}</div>
+                    <div className="text-xs text-muted-foreground mt-1">{loan.description}</div>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <div className="font-semibold mb-1">{loan.title}</div>
-                  <div className="text-sm text-muted-foreground">From {loan.rate} APR • Up to {loan.max}</div>
-                </div>
-              </div>
-              <Button className="w-full mt-4" variant="outline">Apply Now</Button>
-            </CardContent>
-          </Card>
-        ))}
+                <Button className="w-full mt-4" variant="outline" onClick={() => setSelectedRate(loan.rateValue)}>
+                  Select & Apply
+                </Button>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
     </div>
   );

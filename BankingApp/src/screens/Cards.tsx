@@ -1,15 +1,19 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "../services/api";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { CreditCard, Plus, Settings, Lock, Eye, EyeOff } from "lucide-react";
 
-const CARDS = [
-  { id: 1, type: "Debit", name: "Primary Debit Card", last4: "4532", first12: "4532 8910 4532", expiry: "12/27", status: "active", balance: 450000, color: "from-blue-500 to-blue-700" },
-  { id: 2, type: "Credit", name: "Rewards Credit Card", last4: "8910", first12: "8910 1234 5678", expiry: "06/28", status: "active", limit: 500000, balance: 1250000, color: "from-purple-500 to-purple-700" },
-];
-
 export function Cards() {
   const [showNumbers, setShowNumbers] = useState<Record<number, boolean>>({});
+
+  const { data } = useQuery({
+    queryKey: ["cards"],
+    queryFn: api.listCards,
+  });
+
+  const cards = data?.cards || [];
 
   const toggleNumber = (id: number) => {
     setShowNumbers((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -26,32 +30,36 @@ export function Cards() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {CARDS.map((card) => (
-          <div key={card.id} className={`relative overflow-hidden rounded-xl bg-gradient-to-br ${card.color} p-6 text-white shadow-lg`}>
-            <div className="flex items-start justify-between mb-8">
-              <div className="text-sm font-medium opacity-80">{card.type} Card</div>
-              <CreditCard className="h-8 w-8 opacity-80" />
-            </div>
-            <div className="mb-6">
-              <div className="text-lg tracking-widest font-mono">
-                {showNumbers[card.id] ? card.first12 + " " + card.last4 : "**** **** **** " + card.last4}
+        {cards.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-8 text-center col-span-full">No cards found.</p>
+        ) : (
+          cards.map((card) => (
+            <div key={card.id} className={`relative overflow-hidden rounded-xl bg-gradient-to-br ${card.color} p-6 text-white shadow-lg`}>
+              <div className="flex items-start justify-between mb-8">
+                <div className="text-sm font-medium opacity-80">{card.type} Card</div>
+                <CreditCard className="h-8 w-8 opacity-80" />
+              </div>
+              <div className="mb-6">
+                <div className="text-lg tracking-widest font-mono">
+                  {showNumbers[card.id] ? card.first12 + " " + card.last4 : "**** **** **** " + card.last4}
+                </div>
+              </div>
+              <div className="flex items-end justify-between">
+                <div>
+                  <div className="text-xs opacity-70">Card Holder</div>
+                  <div className="text-sm font-medium">{card.cardholderName}</div>
+                </div>
+                <div>
+                  <div className="text-xs opacity-70">Expires</div>
+                  <div className="text-sm font-medium">{card.expiry}</div>
+                </div>
+                <button onClick={() => toggleNumber(card.id)} className="text-white/80 hover:text-white">
+                  {showNumbers[card.id] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
             </div>
-            <div className="flex items-end justify-between">
-              <div>
-                <div className="text-xs opacity-70">Card Holder</div>
-                <div className="text-sm font-medium">DEMO USER</div>
-              </div>
-              <div>
-                <div className="text-xs opacity-70">Expires</div>
-                <div className="text-sm font-medium">{card.expiry}</div>
-              </div>
-              <button onClick={() => toggleNumber(card.id)} className="text-white/80 hover:text-white">
-                {showNumbers[card.id] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </button>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       <Card>

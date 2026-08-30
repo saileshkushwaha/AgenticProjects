@@ -24,7 +24,9 @@ export function Accounts() {
   const queryClient = useQueryClient();
 
   const { data } = useQuery({ queryKey: ["accounts"], queryFn: api.listAccounts });
+  const { data: statementsData } = useQuery({ queryKey: ["statements"], queryFn: api.getStatements });
   const allAccounts = data?.accounts || [];
+  const statements = statementsData?.statements || [];
 
   const activeSubTab = location.pathname.split("/")[2] || "all";
   const filteredAccounts = activeSubTab === "all"
@@ -63,15 +65,19 @@ export function Accounts() {
           <CardHeader><CardTitle className="flex items-center gap-2"><FileText className="h-4 w-4" /> Account Statements</CardTitle></CardHeader>
           <CardContent>
             <div className="space-y-2">
-              {["August 2026", "July 2026", "June 2026", "May 2026"].map((month) => (
-                <div key={month} className="flex items-center justify-between rounded-lg border p-3 hover:bg-muted/50">
-                  <div className="flex items-center gap-3">
-                    <FileText className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">{month} Statement</span>
+              {statements.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-4 text-center">No statements available yet.</p>
+              ) : (
+                statements.map((month) => (
+                  <div key={month} className="flex items-center justify-between rounded-lg border p-3 hover:bg-muted/50">
+                    <div className="flex items-center gap-3">
+                      <FileText className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm font-medium">{month} Statement</span>
+                    </div>
+                    <Button variant="ghost" size="sm"><Download className="h-3.5 w-3.5" /></Button>
                   </div>
-                  <Button variant="ghost" size="sm"><Download className="h-3.5 w-3.5" /></Button>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </CardContent>
         </Card>

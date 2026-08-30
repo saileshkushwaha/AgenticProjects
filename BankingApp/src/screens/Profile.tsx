@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "../services/api";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -9,9 +11,15 @@ import { User, Mail, Phone, MapPin, Calendar, Camera, CheckCircle } from "lucide
 export function Profile() {
   const user = useAuthStore((s) => s.user);
   const [saved, setSaved] = useState(false);
+
+  const { data: profileData } = useQuery({
+    queryKey: ["profile"],
+    queryFn: api.getProfile,
+  });
+
   const [profile, setProfile] = useState({
-    fullName: user?.fullName || "",
-    email: user?.email || "",
+    fullName: user?.fullName || profileData?.fullName || "",
+    email: user?.email || profileData?.email || "",
     phone: "+1 (555) 123-4567",
     dob: "1990-05-15",
     address: "123 Main Street, New York, NY 10001",
@@ -24,6 +32,10 @@ export function Profile() {
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
+
+  const memberSince = profileData?.createdAt
+    ? new Date(profileData.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })
+    : "N/A";
 
   return (
     <div className="space-y-6">
@@ -59,7 +71,7 @@ export function Profile() {
             <div>
               <div className="font-semibold text-lg">{profile.fullName}</div>
               <div className="text-sm text-muted-foreground capitalize">{user?.role || "Customer"}</div>
-              <div className="text-xs text-muted-foreground mt-1">Member since August 2026</div>
+              <div className="text-xs text-muted-foreground mt-1">Member since {memberSince}</div>
             </div>
           </div>
 

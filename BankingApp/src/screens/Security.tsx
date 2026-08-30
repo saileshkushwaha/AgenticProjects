@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "../services/api";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -13,6 +15,13 @@ export function Security() {
     new: "",
     confirm: "",
   });
+
+  const { data } = useQuery({
+    queryKey: ["security-sessions"],
+    queryFn: api.getSecuritySessions,
+  });
+
+  const sessions = data?.sessions || [];
 
   const handleSave = () => {
     setSaved(true);
@@ -120,28 +129,26 @@ export function Security() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between rounded-lg border p-3">
-              <div className="flex items-center gap-3">
-                <div className="h-2 w-2 rounded-full bg-green-500" />
-                <div>
-                  <div className="text-sm font-medium">Current Session</div>
-                  <div className="text-xs text-muted-foreground">Chrome on Windows • New York, US</div>
+          {sessions.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-4">No session data available.</p>
+          ) : (
+            <div className="space-y-3">
+              {sessions.map((session) => (
+                <div key={session.id} className="flex items-center justify-between rounded-lg border p-3">
+                  <div className="flex items-center gap-3">
+                    <div className={`h-2 w-2 rounded-full ${session.status === "active" ? "bg-green-500" : "bg-gray-300"}`} />
+                    <div>
+                      <div className="text-sm font-medium">{session.device}</div>
+                      <div className="text-xs text-muted-foreground">{session.browser} • {session.location}</div>
+                    </div>
+                  </div>
+                  <span className={`text-xs ${session.status === "active" ? "text-green-600" : "text-muted-foreground"}`}>
+                    {session.status === "active" ? "Active now" : new Date(session.lastActive).toLocaleString()}
+                  </span>
                 </div>
-              </div>
-              <span className="text-xs text-green-600">Active now</span>
+              ))}
             </div>
-            <div className="flex items-center justify-between rounded-lg border p-3">
-              <div className="flex items-center gap-3">
-                <div className="h-2 w-2 rounded-full bg-gray-300" />
-                <div>
-                  <div className="text-sm font-medium">Mobile App</div>
-                  <div className="text-xs text-muted-foreground">iPhone • New York, US</div>
-                </div>
-              </div>
-              <span className="text-xs text-muted-foreground">2 hours ago</span>
-            </div>
-          </div>
+          )}
         </CardContent>
       </Card>
     </div>

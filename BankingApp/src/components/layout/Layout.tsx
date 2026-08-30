@@ -1,11 +1,17 @@
-import { useState } from "react";
-import { IconRail } from "./IconRail";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { IconRail, getActiveCategory } from "./IconRail";
 import { NavPanel } from "./NavPanel";
 import { Topbar } from "./Topbar";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [navOpen, setNavOpen] = useState(true);
   const [activeCategory, setActiveCategory] = useState("dashboard");
+  const location = useLocation();
+
+  useEffect(() => {
+    setActiveCategory(getActiveCategory(location.pathname));
+  }, [location.pathname]);
 
   return (
     <div className="flex h-screen overflow-hidden">

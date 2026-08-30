@@ -90,6 +90,87 @@ export interface KycWatchlistCheck {
   details?: string;
 }
 
+export interface Card {
+  id: number;
+  type: string;
+  name: string;
+  last4: string;
+  first12: string;
+  expiry: string;
+  status: string;
+  balance: number;
+  limit?: number;
+  cardholderName: string;
+  color: string;
+}
+
+export interface Notification {
+  id: number;
+  type: string;
+  title: string;
+  message: string;
+  timestamp: string;
+  read: boolean;
+  metadata?: Record<string, unknown> | null;
+}
+
+export interface LoanProduct {
+  id: string;
+  title: string;
+  rate: string;
+  rateValue: number;
+  max: number;
+  maxDisplay: string;
+  description: string;
+}
+
+export interface AnalyticsOverview {
+  totalBalance: number;
+  totalIncome: number;
+  totalExpenses: number;
+  netSavings: number;
+  savingsRate: string;
+}
+
+export interface MonthlyData {
+  month: string;
+  income: number;
+  expenses: number;
+}
+
+export interface CategorySpending {
+  name: string;
+  amount: number;
+  percent: number;
+  color: string;
+}
+
+export interface Report {
+  id: number;
+  name: string;
+  type: string;
+  date: string;
+  size: string;
+}
+
+export interface SecuritySession {
+  id: string;
+  device: string;
+  browser: string;
+  location: string;
+  status: string;
+  lastActive: string;
+}
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  fullName: string;
+  role: string;
+  status: string;
+  createdAt: string | null;
+}
+
 export const api = {
   register: (body: { email: string; password: string; fullName: string }) =>
     http<AuthResponse>("/auth/register", { method: "POST", body: JSON.stringify(body) }),
@@ -127,4 +208,15 @@ export const api = {
 
   createApplication: (body: { firstName: string; lastName: string; product: string; consent: boolean }) =>
     http<{ id: string; status: string; createdAt: string }>("/applications", { method: "POST", body: JSON.stringify(body) }),
+
+  listCards: () => http<{ cards: Card[] }>("/cards"),
+  listNotifications: () => http<{ notifications: Notification[]; unreadCount: number }>("/notifications"),
+  listLoanProducts: () => http<{ products: LoanProduct[] }>("/loans/products"),
+  getAnalyticsOverview: () => http<AnalyticsOverview>("/analytics/overview"),
+  getAnalyticsMonthly: () => http<{ monthly: MonthlyData[] }>("/analytics/monthly"),
+  getAnalyticsCategories: () => http<{ categories: CategorySpending[] }>("/analytics/categories"),
+  listReports: () => http<{ reports: Report[] }>("/reports"),
+  getSecuritySessions: () => http<{ sessions: SecuritySession[] }>("/security/sessions"),
+  getProfile: () => http<UserProfile>("/profile"),
+  getStatements: () => http<{ statements: string[] }>("/accounts/statements"),
 };

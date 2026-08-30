@@ -412,6 +412,225 @@ function createApp() {
     });
   }
 
+  // ---- Notifications ----
+  app.get("/api/notifications", authMiddleware, async (req, res) => {
+    const logs = await db.select().from(auditLogs)
+      .where(eq(auditLogs.userId, req.user.id))
+      .orderBy(desc(auditLogs.timestamp))
+      .limit(20);
+    const notifications = logs.map((log, idx) => ({
+      id: idx + 1,
+      type: log.action.includes("verified") || log.action.includes("completed") ? "success"
+        : log.action.includes("warning") || log.action.includes("unusual") ? "warning"
+        : "info",
+      title: log.action.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+      message: `Action: ${log.action}`,
+      timestamp: log.timestamp ? new Date(log.timestamp).toISOString() : new Date().toISOString(),
+      read: idx > 2,
+      metadata: log.metadata ? JSON.parse(log.metadata) : null,
+    }));
+    res.json({ notifications, unreadCount: notifications.filter((n) => !n.read).length });
+  });
+
+  app.get("/api/notifications/unread-count", authMiddleware, async (req, res) => {
+    const count = await db.select({ count: sql`count(*)` }).from(auditLogs)
+      .where(and(eq(auditLogs.userId, req.user.id), eq(auditLogs.action, "user_login")));
+    res.json({ count: count[0]?.count || 0 });
+  });
+
+  // ---- Cards ----
+  app.get("/api/cards", authMiddleware, async (req, res) => {
+    const userAccounts = await db.select().from(accounts).where(eq(accounts.userId, req.user.id));
+    const user = await db.select().from(users).where(eq(users.id, req.user.id)).limit(1);
+    const cards = [
+      {
+        id: 1,
+        type: "Debit",
+        name: "Primary Debit Card",
+        last4: "4532",
+        first12: "4532 **** ****",
+        expiry: "12/27",
+        status: "active",
+        balance: userAccounts.find((a) => a.type === "checking")?.balance || 0,
+        cardholderName: user[0]?.fullName || "Account Holder",
+        color: "from-blue-500 to-blue-700",
+      },
+      {
+        id: 2,
+        type: "Credit",
+        name: "Rewards Credit Card",
+        last4: "8910",
+        first12: "8910 **** ****",
+        expiry: "06/28",
+        status: "active",
+        balance: 125000,
+        limit: 500000,
+        cardholderName: user[0]?.fullName || "Account Holder",
+        color: "from-purple-500 to-purple-700",
+      },
+    ];
+    res.json({ cards });
+  });
+
+  // ---- Loans ----
+  app.get("/api/loans/products", authMiddleware, async (_req, res) => {
+    const products = [
+      { id: "personal", title: "Personal Loan", rate: "8.5%", rateValue: 0.085, max: 5000000, maxDisplay: "$50,000", description: "Quick personal loans for any purpose" },
+      { id: "auto", title: "Auto Loan", rate: "5.9%", rateValue: 0.059, max: 10000000, maxDisplay: "$100,000", description: "Finance your next vehicle purchase" },
+      { id: "home", title: "Home Loan", rate: "6.5%", rateValue: 0.065, max: 100000000, maxDisplay: "$1,000,000", description: "Buy your dream home with competitive rates" },
+      { id: "education", title: "Education Loan", rate: "4.5%", rateValue: 0.045, max: 20000000, maxDisplay: "$200,000", description: "Invest in your future with education financing" },
+    ];
+    res.json({ products });
+  });
+
+  // ---- Analytics ----
+  app.get("/api/analytics/overview", authMiddleware, async (req, res) => {
+    const userAccounts = await db.select().from(accounts).where(eq(accounts.userId, req.user.id));
+    const totalBalance = userAccounts.reduce((sum, a) => sum + a.balance, 0);
+    const userTxns = await db.select().from(transactions)
+      .orderBy(desc(transactions.date))
+      .limit(100);
+    const totalIncome = userTxns.filter((t) => t.type === "credit").reduce((sum, t) => sum + t.amount, 0);
+    const totalExpenses = userTxns.filter((t) => t.type === "debit").reduce((sum, t) => sum + t.amount, 0);
+    res.json({
+      totalBalance,
+      totalIncome,
+      totalExpenses,
+      netSavings: totalIncome - totalExpenses,
+      savingsRate: totalIncome > 0 ? ((totalIncome - totalExpenses) / totalIncome * 100).toFixed(1) : "0",
+    });
+  });
+
+  app.get("/api/analytics/monthly", authMiddleware, async (req, res) => {
+    const userAccounts = await db.select().from(accounts).where(eq(accounts.userId, req.user.id));
+    const accountIds = userAccounts.map((a) => a.id);
+    const userTxns = await db.select().from(transactions).orderBy(desc(transactions.date)).limit(200);
+    const accountTxns = userTxns.filter((t) => accountIds.includes(t.accountId));
+    const monthlyData = {};
+    accountTxns.forEach((t) => {
+      const d = new Date(t.date);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      if (!monthlyData[key]) monthlyData[key] = { income: 0, expenses: 0 };
+      if (t.type === "credit") monthlyData[key].income += t.amount;
+      else monthlyData[key].expenses += t.amount;
+    });
+    const result = Object.entries(monthlyData)
+      .sort(([a], [b]) => b.localeCompare(a))
+      .slice(0, 6)
+      .reverse()
+      .map(([key, data]) => {
+        const [year, month] = key.split("-");
+        const monthName = new Date(parseInt(year), parseInt(month) - 1).toLocaleString("en-US", { month: "short" });
+        return { month: monthName, income: data.income, expenses: data.expenses };
+      });
+    res.json({ monthly: result });
+  });
+
+  app.get("/api/analytics/categories", authMiddleware, async (req, res) => {
+    const userAccounts = await db.select().from(accounts).where(eq(accounts.userId, req.user.id));
+    const accountIds = userAccounts.map((a) => a.id);
+    const userTxns = await db.select().from(transactions).limit(200);
+    const accountTxns = userTxns.filter((t) => accountIds.includes(t.accountId) && t.type === "debit");
+    const categoryTotals = {};
+    accountTxns.forEach((t) => {
+      const cat = t.category || "other";
+      categoryTotals[cat] = (categoryTotals[cat] || 0) + t.amount;
+    });
+    const total = Object.values(categoryTotals).reduce((sum, v) => sum + v, 0) || 1;
+    const colors = ["bg-blue-500", "bg-green-500", "bg-amber-500", "bg-purple-500", "bg-pink-500", "bg-gray-500", "bg-teal-500"];
+    const categories = Object.entries(categoryTotals)
+      .sort(([, a], [, b]) => b - a)
+      .map(([name, amount], idx) => ({
+        name: name.charAt(0).toUpperCase() + name.slice(1),
+        amount,
+        percent: Math.round((amount / total) * 100),
+        color: colors[idx % colors.length],
+      }));
+    res.json({ categories });
+  });
+
+  // ---- Reports ----
+  app.get("/api/reports", authMiddleware, async (req, res) => {
+    const userAccounts = await db.select().from(accounts).where(eq(accounts.userId, req.user.id));
+    const accountIds = userAccounts.map((a) => a.id);
+    const userTxns = await db.select().from(transactions).orderBy(desc(transactions.date)).limit(50);
+    const accountTxns = userTxns.filter((t) => accountIds.includes(t.accountId));
+    const months = new Set();
+    accountTxns.forEach((t) => {
+      const d = new Date(t.date);
+      months.add(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+    });
+    const reports = Array.from(months).sort().reverse().map((key, idx) => {
+      const [year, month] = key.split("-");
+      const monthName = new Date(parseInt(year), parseInt(month) - 1).toLocaleString("en-US", { month: "long", year: "numeric" });
+      return {
+        id: idx + 1,
+        name: `Monthly Statement - ${monthName}`,
+        type: "Statement",
+        date: `${year}-${month}-01`,
+        size: `${Math.floor(Math.random() * 200 + 100)} KB`,
+      };
+    });
+    res.json({ reports });
+  });
+
+  // ---- Security Sessions ----
+  app.get("/api/security/sessions", authMiddleware, async (req, res) => {
+    const sessions = [
+      {
+        id: "current",
+        device: "Current Session",
+        browser: "Web Browser",
+        location: "New York, US",
+        status: "active",
+        lastActive: new Date().toISOString(),
+      },
+      {
+        id: "mobile",
+        device: "Mobile App",
+        browser: "Mobile Browser",
+        location: "New York, US",
+        status: "recent",
+        lastActive: new Date(Date.now() - 2 * 3600000).toISOString(),
+      },
+    ];
+    res.json({ sessions });
+  });
+
+  // ---- Profile ----
+  app.get("/api/profile", authMiddleware, async (req, res) => {
+    const found = await db.select().from(users).where(eq(users.id, req.user.id)).limit(1);
+    if (found.length === 0) return res.status(404).json({ error: "User not found" });
+    const u = found[0];
+    res.json({
+      id: u.id,
+      email: u.email,
+      fullName: u.fullName,
+      role: u.role,
+      status: u.status,
+      createdAt: u.createdAt ? new Date(u.createdAt).toISOString() : null,
+    });
+  });
+
+  // ---- Statements ----
+  app.get("/api/accounts/statements", authMiddleware, async (req, res) => {
+    const userAccounts = await db.select().from(accounts).where(eq(accounts.userId, req.user.id));
+    const accountIds = userAccounts.map((a) => a.id);
+    const userTxns = await db.select().from(transactions).orderBy(desc(transactions.date)).limit(100);
+    const accountTxns = userTxns.filter((t) => accountIds.includes(t.accountId));
+    const months = new Set();
+    accountTxns.forEach((t) => {
+      const d = new Date(t.date);
+      months.add(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+    });
+    const statements = Array.from(months).sort().reverse().map((key) => {
+      const [year, month] = key.split("-");
+      const monthName = new Date(parseInt(year), parseInt(month) - 1).toLocaleString("en-US", { month: "long", year: "numeric" });
+      return monthName;
+    });
+    res.json({ statements });
+  });
+
   return app;
 }
 
