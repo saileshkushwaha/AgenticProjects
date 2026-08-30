@@ -36,13 +36,13 @@ jobs:
       - name: Clean install and build
         run: |
           cd BankingApp
-          rm -rf node_modules package-lock.json dist
+          rm -rf node_modules package-lock.json dist .vite
           npm install
-          npm run build
-          echo "=== Checking api.ts ==="
+          echo "=== api.ts content ==="
           head -3 src/services/api.ts
-          echo "=== Checking built JS ==="
-          grep -o 'onrender\.com[^"]*' dist/assets/*.js | head -3
+          npm run build
+          echo "=== built JS URL ==="
+          grep -oP 'https://[^"]+onrender\.com[^"]*' dist/assets/*.js | head -3
 
       - uses: actions/upload-pages-artifact@v3
         with:
