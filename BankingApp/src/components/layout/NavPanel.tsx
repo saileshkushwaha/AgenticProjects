@@ -23,6 +23,7 @@ import {
   Lock,
   LogOut,
   RefreshCw,
+  Grid3X3,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useAuthStore } from "../../stores/authStore";
@@ -37,6 +38,7 @@ interface SubItem {
 interface MainCategory {
   id: string;
   title: string;
+  basePath: string;
   items: SubItem[];
 }
 
@@ -44,6 +46,7 @@ const CATEGORIES: MainCategory[] = [
   {
     id: "dashboard",
     title: "Dashboard",
+    basePath: "/",
     items: [
       { to: "/", icon: LayoutDashboard, label: "Overview" },
       { to: "/reports", icon: FileText, label: "Reports" },
@@ -52,6 +55,7 @@ const CATEGORIES: MainCategory[] = [
   {
     id: "accounts",
     title: "Accounts",
+    basePath: "/accounts",
     items: [
       { to: "/accounts", icon: Wallet, label: "All Accounts" },
       { to: "/accounts/checking", icon: Building2, label: "Checking" },
@@ -63,6 +67,7 @@ const CATEGORIES: MainCategory[] = [
   {
     id: "transactions",
     title: "Transactions",
+    basePath: "/transactions",
     items: [
       { to: "/transactions", icon: ArrowLeftRight, label: "All Transactions" },
       { to: "/transactions/history", icon: History, label: "History" },
@@ -73,6 +78,7 @@ const CATEGORIES: MainCategory[] = [
   {
     id: "transfers",
     title: "Transfers",
+    basePath: "/transfers",
     items: [
       { to: "/transfers", icon: CreditCard, label: "New Transfer" },
       { to: "/transfers/send", icon: Send, label: "Send Money" },
@@ -83,7 +89,9 @@ const CATEGORIES: MainCategory[] = [
   {
     id: "services",
     title: "Services",
+    basePath: "/services",
     items: [
+      { to: "/services", icon: Grid3X3, label: "All Services" },
       { to: "/applications", icon: User, label: "Open Account" },
       { to: "/kyc", icon: Shield, label: "KYC Verification" },
       { to: "/analytics", icon: BarChart3, label: "Analytics" },
@@ -94,6 +102,7 @@ const CATEGORIES: MainCategory[] = [
   {
     id: "settings",
     title: "Settings",
+    basePath: "/settings",
     items: [
       { to: "/settings", icon: Settings, label: "General" },
       { to: "/notifications", icon: Bell, label: "Notifications", badge: 3 },
@@ -114,10 +123,10 @@ export function NavPanel() {
   };
 
   const activeCategory = CATEGORIES.find((cat) =>
-    cat.items.some((item) => isActive(item.to))
-  )?.id || "dashboard";
+    cat.basePath === "/" ? location.pathname === "/" : location.pathname.startsWith(cat.basePath)
+  ) || CATEGORIES[0];
 
-  const currentCategory = CATEGORIES.find((cat) => cat.id === activeCategory) || CATEGORIES[0];
+  const currentCategory = activeCategory;
 
   return (
     <div className="flex h-full w-60 flex-col border-r bg-muted/30">
