@@ -30,6 +30,9 @@ jobs:
           cache-dependency-path: BankingApp/package-lock.json
 
       - run: rm -rf node_modules/.cache && npm ci
+
+      - name: Verify API URL in source
+        run: cat BankingApp/src/services/api.ts | head -3
       - run: npm run build
 
       - uses: actions/upload-pages-artifact@v3
