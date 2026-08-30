@@ -39,9 +39,10 @@ jobs:
           rm -rf node_modules package-lock.json dist
           npm install
           npm run build
-
-      - name: Verify built JS has API URL
-        run: grep -o 'onrender\.com[^"]*' BankingApp/dist/assets/*.js | head -3
+          echo "=== Checking api.ts ==="
+          head -3 src/services/api.ts
+          echo "=== Checking built JS ==="
+          grep -o 'onrender\.com[^"]*' dist/assets/*.js | head -3
 
       - uses: actions/upload-pages-artifact@v3
         with:
