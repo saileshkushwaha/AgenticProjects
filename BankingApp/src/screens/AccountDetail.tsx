@@ -7,7 +7,7 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Badge } from "../components/ui/badge";
 import { formatCurrency, formatDate } from "../lib/utils";
-import { Plus, Send, Download, QrCode } from "lucide-react";
+import { Plus, Send } from "lucide-react";
 
 export function AccountDetail() {
   const { id } = useParams();
