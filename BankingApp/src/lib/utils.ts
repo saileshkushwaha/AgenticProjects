@@ -13,9 +13,10 @@ export function formatCurrency(cents: number, currency = "USD"): string {
 }
 
 export function formatDate(date: string | Date | number): string {
+  const ms = typeof date === "number" ? date * 1000 : date;
   return new Intl.DateTimeFormat("en-US", {
     year: "numeric",
     month: "short",
     day: "numeric",
-  }).format(new Date(date));
+  }).format(new Date(ms));
 }
