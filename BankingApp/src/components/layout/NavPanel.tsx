@@ -16,7 +16,6 @@ import {
   History,
   Send,
   Download,
-  TrendingUp,
   CreditCard as CreditCardIcon,
   UserCheck,
   AlertCircle,

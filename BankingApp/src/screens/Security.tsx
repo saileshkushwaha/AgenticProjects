@@ -3,7 +3,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card"
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import { Shield, Lock, Smartphone, Key, Eye, EyeOff, CheckCircle, AlertCircle } from "lucide-react";
+import { Shield, Lock, Smartphone, Key, Eye, EyeOff, CheckCircle } from "lucide-react";
 
 export function Security() {
   const [showPassword, setShowPassword] = useState(false);
