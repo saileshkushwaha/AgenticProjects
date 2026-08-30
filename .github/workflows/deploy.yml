@@ -22,19 +22,30 @@ jobs:
         working-directory: BankingApp
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Verify git commit
+        run: git log --oneline -3
 
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
-          cache-dependency-path: BankingApp/package-lock.json
 
-      - run: npm ci
-      - run: npm run build
+      - name: Clean install and build
+        run: |
+          rm -rf node_modules package-lock.json dist .vite
+          npm install
+          echo "=== api.ts BASE line ==="
+          grep "const BASE" src/services/api.ts
+          npm run build
+          echo "=== built JS URL ==="
+          grep -oP 'https://[^"]+onrender\.com[^"]*' dist/assets/*.js | head -3
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: BankingApp/dist
+          path: dist
 
   deploy:
     environment:
