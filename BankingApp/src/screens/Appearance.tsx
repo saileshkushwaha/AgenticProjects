@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Label } from "../components/ui/label";
@@ -27,13 +27,32 @@ const LANGUAGES = [
   { code: "de", name: "Deutsch" },
 ];
 
+function applyTheme(theme: string) {
+  const root = document.documentElement;
+  if (theme === "dark") {
+    root.classList.add("dark");
+  } else if (theme === "light") {
+    root.classList.remove("dark");
+  } else {
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    if (prefersDark) root.classList.add("dark");
+    else root.classList.remove("dark");
+  }
+}
+
 export function Appearance() {
-  const [theme, setTheme] = useState("light");
-  const [accentColor, setAccentColor] = useState("blue");
+  const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
+  const [accentColor, setAccentColor] = useState(() => localStorage.getItem("accentColor") || "blue");
   const [language, setLanguage] = useState("en");
   const [saved, setSaved] = useState(false);
 
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
+
   const handleSave = () => {
+    localStorage.setItem("theme", theme);
+    localStorage.setItem("accentColor", accentColor);
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };

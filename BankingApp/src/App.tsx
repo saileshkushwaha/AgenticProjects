@@ -17,7 +17,9 @@ import { KycVerification } from "./screens/KycVerification";
 import { Reports } from "./screens/Reports";
 import { Profile } from "./screens/Profile";
 import { Security } from "./screens/Security";
-import { Appearance } from "./screens/Appearance";
+import { Services } from "./screens/Services";
+import { Cards } from "./screens/Cards";
+import { Loans } from "./screens/Loans";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = useAuthStore((s) => s.token);
@@ -56,9 +58,9 @@ export default function App() {
                 <Route path="/kyc" element={<KycVerification />} />
                 <Route path="/analytics" element={<Analytics />} />
                 <Route path="/reports" element={<Reports />} />
-                <Route path="/services" element={<Dashboard />} />
-                <Route path="/cards" element={<Dashboard />} />
-                <Route path="/loans" element={<Dashboard />} />
+                <Route path="/services" element={<Services />} />
+                <Route path="/cards" element={<Cards />} />
+                <Route path="/loans" element={<Loans />} />
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/security" element={<Security />} />
