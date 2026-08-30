@@ -186,7 +186,18 @@ function createApp() {
   app.get("/api/transactions", authMiddleware, async (req, res) => {
     try {
       const rows = sqlite.prepare("SELECT * FROM transactions ORDER BY date DESC LIMIT 50").all();
-      res.json({ transactions: rows, total: rows.length, page: 1, totalPages: 1 });
+      const mapped = rows.map((r) => ({
+        id: r.id,
+        accountId: r.account_id,
+        type: r.type,
+        amount: r.amount,
+        description: r.description,
+        category: r.category,
+        date: r.date,
+        balanceAfter: r.balance_after,
+        createdAt: r.created_at,
+      }));
+      res.json({ transactions: mapped, total: mapped.length, page: 1, totalPages: 1 });
     } catch (e) {
       console.error("Transactions error:", e);
       res.status(500).json({ error: e.message });
@@ -261,7 +272,19 @@ function createApp() {
   app.get("/api/transfers", authMiddleware, async (req, res) => {
     try {
       const rows = sqlite.prepare("SELECT * FROM transfers ORDER BY created_at DESC LIMIT 50").all();
-      res.json({ transfers: rows });
+      const mapped = rows.map((r) => ({
+        id: r.id,
+        fromAccountId: r.from_account_id,
+        toAccountId: r.to_account_id,
+        externalRouting: r.external_routing,
+        externalAccount: r.external_account,
+        amount: r.amount,
+        transferType: r.transfer_type,
+        status: r.status,
+        reference: r.reference,
+        createdAt: r.created_at,
+      }));
+      res.json({ transfers: mapped });
     } catch (e) {
       console.error("Transfers error:", e);
       res.status(500).json({ error: e.message });
