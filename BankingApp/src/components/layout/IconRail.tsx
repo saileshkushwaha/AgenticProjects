@@ -4,24 +4,18 @@ import {
   Wallet,
   ArrowLeftRight,
   CreditCard,
-  User,
-  Bell,
+  Grid3X3,
   Settings,
-  BarChart3,
-  Shield,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
 const ICON_NAV = [
-  { to: "/", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/accounts", icon: Wallet, label: "Accounts" },
-  { to: "/transactions", icon: ArrowLeftRight, label: "Transactions" },
-  { to: "/transfers", icon: CreditCard, label: "Transfers" },
-  { to: "/applications", icon: User, label: "Open Account" },
-  { to: "/kyc", icon: Shield, label: "KYC" },
-  { to: "/analytics", icon: BarChart3, label: "Analytics" },
-  { to: "/notifications", icon: Bell, label: "Notifications" },
-  { to: "/settings", icon: Settings, label: "Settings" },
+  { to: "/", icon: LayoutDashboard, label: "Dashboard", category: "dashboard" },
+  { to: "/accounts", icon: Wallet, label: "Accounts", category: "accounts" },
+  { to: "/transactions", icon: ArrowLeftRight, label: "Transactions", category: "transactions" },
+  { to: "/transfers", icon: CreditCard, label: "Transfers", category: "transfers" },
+  { to: "/services", icon: Grid3X3, label: "Services", category: "services" },
+  { to: "/settings", icon: Settings, label: "Settings", category: "settings" },
 ];
 
 export function IconRail() {
@@ -32,9 +26,11 @@ export function IconRail() {
     return location.pathname.startsWith(to);
   };
 
+  const activeCategory = ICON_NAV.find((item) => isActive(item.to))?.category || "dashboard";
+
   return (
-    <div className="flex h-full w-14 flex-col items-center border-r bg-card py-2 gap-1">
-      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-sm mb-2">
+    <div className="flex h-full w-16 flex-col items-center border-r bg-[#1b1b2f] py-3 gap-1">
+      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 text-white font-bold text-sm mb-3">
         B
       </div>
       {ICON_NAV.map((item) => (
@@ -42,22 +38,33 @@ export function IconRail() {
           key={item.to}
           to={item.to}
           className={cn(
-            "flex h-10 w-10 items-center justify-center rounded-lg transition-all relative group",
+            "flex h-11 w-11 items-center justify-center rounded-lg transition-all relative group",
             isActive(item.to)
-              ? "bg-primary text-primary-foreground shadow-sm"
-              : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              ? "bg-white/20 text-white shadow-lg"
+              : "text-white/60 hover:bg-white/10 hover:text-white"
           )}
           title={item.label}
         >
-          <item.icon className="h-4 w-4" />
+          <item.icon className="h-5 w-5" />
           {isActive(item.to) && (
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-0.5 rounded-r-full bg-primary" />
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 h-7 w-1 rounded-r-full bg-white" />
           )}
-          <div className="absolute left-full ml-2 hidden group-hover:block z-50 rounded-md bg-foreground px-2 py-1 text-xs text-background whitespace-nowrap shadow-lg">
+          <div className="absolute left-full ml-3 hidden group-hover:block z-50 rounded-md bg-gray-900 px-3 py-1.5 text-xs text-white whitespace-nowrap shadow-lg">
             {item.label}
           </div>
         </NavLink>
       ))}
     </div>
   );
+}
+
+export function getActiveCategory() {
+  const location = useLocation();
+  if (location.pathname === "/") return "dashboard";
+  if (location.pathname.startsWith("/accounts")) return "accounts";
+  if (location.pathname.startsWith("/transactions")) return "transactions";
+  if (location.pathname.startsWith("/transfers")) return "transfers";
+  if (location.pathname.startsWith("/applications") || location.pathname.startsWith("/kyc") || location.pathname.startsWith("/analytics")) return "services";
+  if (location.pathname.startsWith("/notifications") || location.pathname.startsWith("/settings")) return "settings";
+  return "dashboard";
 }
