@@ -122,9 +122,13 @@ export function NavPanel() {
     return location.pathname.startsWith(to);
   };
 
-  const activeCategory = CATEGORIES.find((cat) =>
-    cat.basePath === "/" ? location.pathname === "/" : location.pathname.startsWith(cat.basePath)
-  ) || CATEGORIES[0];
+  const isCategoryActive = (cat: MainCategory) => {
+    if (cat.basePath === "/") return location.pathname === "/";
+    if (location.pathname.startsWith(cat.basePath)) return true;
+    return cat.items.some((item) => isActive(item.to));
+  };
+
+  const activeCategory = CATEGORIES.find(isCategoryActive) || CATEGORIES[0];
 
   const currentCategory = activeCategory;
 
