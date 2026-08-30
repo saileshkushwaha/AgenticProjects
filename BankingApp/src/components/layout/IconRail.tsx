@@ -26,8 +26,6 @@ export function IconRail() {
     return location.pathname.startsWith(to);
   };
 
-  const activeCategory = ICON_NAV.find((item) => isActive(item.to))?.category || "dashboard";
-
   return (
     <div className="flex h-full w-16 flex-col items-center border-r bg-[#1b1b2f] py-3 gap-1">
       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10 text-white font-bold text-sm mb-3">
@@ -56,15 +54,4 @@ export function IconRail() {
       ))}
     </div>
   );
-}
-
-export function getActiveCategory() {
-  const location = useLocation();
-  if (location.pathname === "/") return "dashboard";
-  if (location.pathname.startsWith("/accounts")) return "accounts";
-  if (location.pathname.startsWith("/transactions")) return "transactions";
-  if (location.pathname.startsWith("/transfers")) return "transfers";
-  if (location.pathname.startsWith("/applications") || location.pathname.startsWith("/kyc") || location.pathname.startsWith("/analytics")) return "services";
-  if (location.pathname.startsWith("/notifications") || location.pathname.startsWith("/settings")) return "settings";
-  return "dashboard";
 }

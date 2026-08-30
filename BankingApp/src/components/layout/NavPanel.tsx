@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -110,7 +109,6 @@ const CATEGORIES: MainCategory[] = [
 export function NavPanel() {
   const location = useLocation();
   const logout = useAuthStore((s) => s.logout);
-  const [expandedGroups, setExpandedGroups] = useState<string[]>(["dashboard", "accounts", "transactions", "transfers", "services", "settings"]);
 
   const isActive = (to: string) => {
     if (to === "/") return location.pathname === "/";
