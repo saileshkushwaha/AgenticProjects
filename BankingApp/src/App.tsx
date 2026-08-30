@@ -19,27 +19,32 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route
-        path="/*"
-        element={
-          <ProtectedRoute>
-            <Layout>
-              <Routes>
-                <Route path="/" element={<Dashboard />} />
-                <Route path="/accounts" element={<Accounts />} />
-                <Route path="/accounts/:id" element={<AccountDetail />} />
-                <Route path="/transactions" element={<Transactions />} />
-                <Route path="/transfers" element={<Transfers />} />
-                <Route path="/applications" element={<NewApplication />} />
-                <Route path="/applications/:id" element={<ApplicationDetail />} />
-              </Routes>
-            </Layout>
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
+    <div>
+      <div style={{ padding: "1rem", background: "#f0f0f0", textAlign: "center" }}>
+        <strong>BankingApp Loading...</strong>
+      </div>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route
+          path="/*"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Routes>
+                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/accounts" element={<Accounts />} />
+                  <Route path="/accounts/:id" element={<AccountDetail />} />
+                  <Route path="/transactions" element={<Transactions />} />
+                  <Route path="/transfers" element={<Transfers />} />
+                  <Route path="/applications" element={<NewApplication />} />
+                  <Route path="/applications/:id" element={<ApplicationDetail />} />
+                </Routes>
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </div>
   );
 }
