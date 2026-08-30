@@ -35,18 +35,17 @@ jobs:
 
       - name: Clean install and build
         run: |
-          cd BankingApp
           rm -rf node_modules package-lock.json dist .vite
           npm install
           echo "=== api.ts BASE line ==="
           grep "const BASE" src/services/api.ts
           npm run build
-          echo "=== built JS URL (first 200 chars) ==="
-          grep -oP '.{0,100}agenticprojects-nmyk\.onrender\.com.{0,100}' dist/assets/*.js | head -1
+          echo "=== built JS URL ==="
+          grep -oP 'https://[^"]+onrender\.com[^"]*' dist/assets/*.js | head -3
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: BankingApp/dist
+          path: dist
 
   deploy:
     environment:
