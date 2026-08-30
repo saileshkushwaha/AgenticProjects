@@ -1,4 +1,4 @@
-const BASE = "https://agenticprojects-nmyk.onrender.com/api";
+const BASE = import.meta.env.VITE_API_URL || "https://agenticprojects-nmyk.onrender.com/api";
 
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
   const token = localStorage.getItem("token");

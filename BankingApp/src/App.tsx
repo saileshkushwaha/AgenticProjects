@@ -64,9 +64,9 @@ export default function App() {
                 <Route path="/loans" element={<Loans />} />
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/settings" element={<Settings />} />
-                <Route path="/security" element={<Security />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/appearance" element={<Appearance />} />
+                <Route path="/settings/security" element={<Security />} />
+                <Route path="/settings/profile" element={<Profile />} />
+                <Route path="/settings/appearance" element={<Appearance />} />
               </Routes>
             </Layout>
           </ProtectedRoute>

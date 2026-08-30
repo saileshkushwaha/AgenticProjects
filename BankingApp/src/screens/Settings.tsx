@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Card, CardContent } from "../components/ui/card";
 import { User, Shield, Palette, Bell, Settings as SettingsIcon } from "lucide-react";
 import { Profile } from "./Profile";
@@ -7,15 +7,15 @@ import { Appearance } from "./Appearance";
 import { cn } from "../lib/utils";
 
 const TABS = [
-  { id: "profile", label: "Profile", icon: User },
-  { id: "security", label: "Security", icon: Shield },
-  { id: "appearance", label: "Appearance", icon: Palette },
-  { id: "notifications", label: "Notifications", icon: Bell },
-  { id: "general", label: "General", icon: SettingsIcon },
+  { id: "profile", label: "Profile", icon: User, path: "/settings/profile" },
+  { id: "security", label: "Security", icon: Shield, path: "/settings/security" },
+  { id: "appearance", label: "Appearance", icon: Palette, path: "/settings/appearance" },
+  { id: "notifications", label: "Notifications", icon: Bell, path: "/settings/notifications", badge: 3 },
+  { id: "general", label: "General", icon: SettingsIcon, path: "/settings" },
 ];
 
 export function Settings() {
-  const [activeTab, setActiveTab] = useState("profile");
+  const location = useLocation();
 
   return (
     <div className="space-y-6">
@@ -28,25 +28,30 @@ export function Settings() {
         {TABS.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => (window.location.href = tab.path)}
             className={cn(
               "flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
-              activeTab === tab.id
+              location.pathname === tab.path
                 ? "border-primary text-primary"
                 : "border-transparent text-muted-foreground hover:text-foreground"
             )}
           >
             <tab.icon className="h-4 w-4" />
             {tab.label}
+            {tab.badge && (
+              <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
+                {tab.badge}
+              </span>
+            )}
           </button>
         ))}
       </div>
 
       <div>
-        {activeTab === "profile" && <Profile />}
-        {activeTab === "security" && <Security />}
-        {activeTab === "appearance" && <Appearance />}
-        {activeTab === "notifications" && (
+        {location.pathname === "/settings/profile" && <Profile />}
+        {location.pathname === "/settings/security" && <Security />}
+        {location.pathname === "/settings/appearance" && <Appearance />}
+        {location.pathname === "/settings/notifications" && (
           <Card>
             <CardContent className="p-6 space-y-4">
               <h3 className="font-semibold">Notification Preferences</h3>
@@ -59,7 +64,7 @@ export function Settings() {
             </CardContent>
           </Card>
         )}
-        {activeTab === "general" && (
+        {location.pathname === "/settings" && (
           <Card>
             <CardContent className="p-6 space-y-4">
               <h3 className="font-semibold">General Settings</h3>

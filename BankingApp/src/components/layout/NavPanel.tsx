@@ -105,10 +105,10 @@ const CATEGORIES: MainCategory[] = [
     basePath: "/settings",
     items: [
       { to: "/settings", icon: Settings, label: "General" },
-      { to: "/notifications", icon: Bell, label: "Notifications", badge: 3 },
-      { to: "/security", icon: Lock, label: "Security" },
-      { to: "/profile", icon: UserCheck, label: "Profile" },
-      { to: "/appearance", icon: Palette, label: "Appearance" },
+      { to: "/settings/notifications", icon: Bell, label: "Notifications", badge: 3 },
+      { to: "/settings/security", icon: Lock, label: "Security" },
+      { to: "/settings/profile", icon: UserCheck, label: "Profile" },
+      { to: "/settings/appearance", icon: Palette, label: "Appearance" },
     ],
   },
 ];
@@ -119,13 +119,18 @@ export function NavPanel() {
 
   const isActive = (to: string) => {
     if (to === "/") return location.pathname === "/";
-    return location.pathname.startsWith(to);
+    return location.pathname === to || location.pathname.startsWith(to + "/");
   };
 
   const isCategoryActive = (cat: MainCategory) => {
     if (cat.basePath === "/") return location.pathname === "/";
     if (location.pathname.startsWith(cat.basePath)) return true;
-    return cat.items.some((item) => isActive(item.to));
+    return cat.items.some((item) => {
+      if (item.to.startsWith(cat.basePath)) {
+        return isActive(item.to);
+      }
+      return false;
+    });
   };
 
   const activeCategory = CATEGORIES.find(isCategoryActive) || CATEGORIES[0];
