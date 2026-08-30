@@ -1,4 +1,22 @@
-const BASE = import.meta.env.VITE_API_URL || "https://agenticprojects-nmyk.onrender.com/api";
+const BASE = import.meta.env.VITE_API_URL || "";
+
+interface AuthUser {
+  id: string;
+  email: string;
+  fullName: string;
+  role: string;
+}
+
+interface AuthResponse {
+  token: string;
+  user: AuthUser;
+}
+
+interface DepositResponse {
+  id: string;
+  balance: number;
+  transaction: Transaction;
+}
 
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
   const token = localStorage.getItem("token");
@@ -17,8 +35,9 @@ async function http<T>(path: string, init?: RequestInit): Promise<T> {
       throw new Error(body.error || `Request failed (${res.status})`);
     }
     return res.json() as Promise<T>;
-  } catch (e: any) {
-    console.error(`API Error [${path}]:`, e.message);
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Unknown error";
+    console.error(`API Error [${path}]:`, message);
     throw e;
   }
 }
@@ -73,17 +92,17 @@ export interface KycWatchlistCheck {
 
 export const api = {
   register: (body: { email: string; password: string; fullName: string }) =>
-    http<{ token: string; user: any }>("/auth/register", { method: "POST", body: JSON.stringify(body) }),
+    http<AuthResponse>("/auth/register", { method: "POST", body: JSON.stringify(body) }),
   login: (body: { email: string; password: string }) =>
-    http<{ token: string; user: any }>("/auth/login", { method: "POST", body: JSON.stringify(body) }),
-  me: () => http<any>("/auth/me"),
+    http<AuthResponse>("/auth/login", { method: "POST", body: JSON.stringify(body) }),
+  me: () => http<AuthUser>("/auth/me"),
 
   listAccounts: () => http<{ accounts: Account[] }>("/accounts"),
   createAccount: (body: { type: string; name: string }) =>
     http<Account>("/accounts", { method: "POST", body: JSON.stringify(body) }),
   getAccount: (id: string) => http<Account & { transactions: Transaction[] }>(`/accounts/${id}`),
   deposit: (id: string, amount: number) =>
-    http<{ id: string; balance: number; transaction: any }>(`/accounts/${id}/deposit`, { method: "POST", body: JSON.stringify({ amount }) }),
+    http<DepositResponse>(`/accounts/${id}/deposit`, { method: "POST", body: JSON.stringify({ amount }) }),
 
   listTransactions: (params?: { accountId?: string; page?: number; limit?: number }) => {
     const qs = new URLSearchParams();

@@ -22,6 +22,16 @@ import { Services } from "./screens/Services";
 import { Cards } from "./screens/Cards";
 import { Loans } from "./screens/Loans";
 
+function NotFound() {
+  return (
+    <div className="flex flex-col items-center justify-center h-full space-y-4">
+      <h1 className="text-4xl font-bold">404</h1>
+      <p className="text-muted-foreground">Page not found</p>
+      <a href="#/" className="text-primary hover:underline">Go to Dashboard</a>
+    </div>
+  );
+}
+
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = useAuthStore((s) => s.token);
   if (!token) return <Navigate to="/login" replace />;
@@ -67,6 +77,7 @@ export default function App() {
                 <Route path="/settings/security" element={<Security />} />
                 <Route path="/settings/profile" element={<Profile />} />
                 <Route path="/settings/appearance" element={<Appearance />} />
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </Layout>
           </ProtectedRoute>

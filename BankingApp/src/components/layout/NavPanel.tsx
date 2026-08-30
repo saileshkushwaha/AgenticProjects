@@ -3,7 +3,6 @@ import {
   LayoutDashboard,
   Wallet,
   ArrowLeftRight,
-  CreditCard,
   User,
   Shield,
   BarChart3,
@@ -80,7 +79,7 @@ const CATEGORIES: MainCategory[] = [
     title: "Transfers",
     basePath: "/transfers",
     items: [
-      { to: "/transfers", icon: CreditCard, label: "New Transfer" },
+      { to: "/transfers", icon: Send, label: "New Transfer" },
       { to: "/transfers/send", icon: Send, label: "Send Money" },
       { to: "/transfers/receive", icon: Download, label: "Request Money" },
       { to: "/transfers/scheduled", icon: History, label: "Scheduled" },
@@ -133,9 +132,7 @@ export function NavPanel() {
     });
   };
 
-  const activeCategory = CATEGORIES.find(isCategoryActive) || CATEGORIES[0];
-
-  const currentCategory = activeCategory;
+  CATEGORIES.find(isCategoryActive);
 
   return (
     <div className="flex h-full w-60 flex-col border-r bg-muted/30">
@@ -149,40 +146,43 @@ export function NavPanel() {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 border-b px-3 py-2">
-        <h2 className="text-sm font-semibold">{currentCategory.title}</h2>
-      </div>
-
       <nav className="flex-1 overflow-y-auto px-2 py-2">
-        <div className="space-y-0.5">
-          {currentCategory.items.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={cn(
-                "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-all",
-                isActive(item.to)
-                  ? "bg-primary/10 text-primary font-medium shadow-sm"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              <item.icon className="h-4 w-4 shrink-0" />
-              <span className="flex-1 truncate">{item.label}</span>
-              {item.badge && (
-                <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
-                  {item.badge}
-                </span>
-              )}
-            </NavLink>
-          ))}
-        </div>
+        {CATEGORIES.map((cat) => (
+          <div key={cat.id} className="mb-3">
+            <div className="px-3 py-1 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              {cat.title}
+            </div>
+            <div className="space-y-0.5">
+              {cat.items.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={cn(
+                    "flex items-center gap-2.5 rounded-md px-3 py-1.5 text-sm transition-all",
+                    isActive(item.to)
+                      ? "bg-primary/10 text-primary font-medium shadow-sm"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                >
+                  <item.icon className="h-3.5 w-3.5 shrink-0" />
+                  <span className="flex-1 truncate">{item.label}</span>
+                  {item.badge && (
+                    <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-destructive-foreground">
+                      {item.badge}
+                    </span>
+                  )}
+                </NavLink>
+              ))}
+            </div>
+          </div>
+        ))}
       </nav>
 
       <div className="border-t p-2">
         <button
           onClick={() => {
             logout();
-            window.location.href = "/AgenticProjects/#/login";
+            window.location.hash = "#/login";
           }}
           className="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
         >

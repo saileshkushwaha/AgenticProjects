@@ -19,6 +19,9 @@ export function NewApplication() {
 
   const mutation = useMutation({
     mutationFn: () => api.createApplication({ firstName, lastName, product, consent }),
+    onError: (err) => {
+      alert(err instanceof Error ? err.message : "Failed to submit application");
+    },
   });
 
   const next = () => setStep((s) => Math.min(s + 1, STEPS.length - 1));

@@ -34,6 +34,9 @@ export function Transfers() {
       setAmount("");
       setReference("");
     },
+    onError: (err) => {
+      alert(err instanceof Error ? err.message : "Transfer failed");
+    },
   });
 
   return (

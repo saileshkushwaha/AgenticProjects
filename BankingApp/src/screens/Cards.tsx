@@ -4,8 +4,8 @@ import { Button } from "../components/ui/button";
 import { CreditCard, Plus, Settings, Lock, Eye, EyeOff } from "lucide-react";
 
 const CARDS = [
-  { id: 1, type: "Debit", name: "Primary Debit Card", last4: "4532", expiry: "12/27", status: "active", balance: 450000, color: "from-blue-500 to-blue-700" },
-  { id: 2, type: "Credit", name: "Rewards Credit Card", last4: "8910", expiry: "06/28", status: "active", limit: 500000, balance: 1250000, color: "from-purple-500 to-purple-700" },
+  { id: 1, type: "Debit", name: "Primary Debit Card", last4: "4532", first12: "4532 8910 4532", expiry: "12/27", status: "active", balance: 450000, color: "from-blue-500 to-blue-700" },
+  { id: 2, type: "Credit", name: "Rewards Credit Card", last4: "8910", first12: "8910 1234 5678", expiry: "06/28", status: "active", limit: 500000, balance: 1250000, color: "from-purple-500 to-purple-700" },
 ];
 
 export function Cards() {
@@ -34,7 +34,7 @@ export function Cards() {
             </div>
             <div className="mb-6">
               <div className="text-lg tracking-widest font-mono">
-                {showNumbers[card.id] ? "4532 8910 4532 " + card.last4 : "**** **** **** " + card.last4}
+                {showNumbers[card.id] ? card.first12 + " " + card.last4 : "**** **** **** " + card.last4}
               </div>
             </div>
             <div className="flex items-end justify-between">

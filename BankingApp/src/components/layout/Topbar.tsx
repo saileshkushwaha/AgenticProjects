@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Bell, Search, Moon, Sun, User, ChevronDown, LogOut, Settings, Menu } from "lucide-react";
 import { useAuthStore } from "../../stores/authStore";
+import { useNavigate } from "react-router-dom";
 
 interface TopbarProps {
   onToggleNav: () => void;
@@ -11,6 +12,7 @@ export function Topbar({ onToggleNav, navOpen }: TopbarProps) {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const user = useAuthStore((s) => s.user);
+  const navigate = useNavigate();
 
   return (
     <header className="flex h-12 items-center gap-3 border-b bg-card px-4">
@@ -62,11 +64,11 @@ export function Topbar({ onToggleNav, navOpen }: TopbarProps) {
             <>
               <div className="fixed inset-0 z-40" onClick={() => setShowUserMenu(false)} />
               <div className="absolute right-0 top-full z-50 mt-1 w-44 rounded-lg border bg-card p-1 shadow-lg">
-                <button className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-sm hover:bg-muted">
+                <button className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-sm hover:bg-muted" onClick={() => { setShowUserMenu(false); navigate("/settings/profile"); }}>
                   <User className="h-3.5 w-3.5" />
                   Profile
                 </button>
-                <button className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-sm hover:bg-muted">
+                <button className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-sm hover:bg-muted" onClick={() => { setShowUserMenu(false); navigate("/settings"); }}>
                   <Settings className="h-3.5 w-3.5" />
                   Settings
                 </button>
@@ -74,7 +76,7 @@ export function Topbar({ onToggleNav, navOpen }: TopbarProps) {
                 <button
                   onClick={() => {
                     useAuthStore.getState().logout();
-                    window.location.href = "/AgenticProjects/#/login";
+                    window.location.hash = "#/login";
                   }}
                   className="flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-sm text-destructive hover:bg-muted"
                 >

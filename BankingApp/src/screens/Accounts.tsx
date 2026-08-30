@@ -41,6 +41,9 @@ export function Accounts() {
       setName("");
       setType("checking");
     },
+    onError: (err) => {
+      alert(err instanceof Error ? err.message : "Failed to create account");
+    },
   });
 
   return (

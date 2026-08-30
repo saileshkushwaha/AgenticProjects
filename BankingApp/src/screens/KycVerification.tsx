@@ -4,21 +4,25 @@ import { api } from "../services/api";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Badge } from "../components/ui/badge";
-import { Shield, FileCheck, UserCheck, CheckCircle, Upload } from "lucide-react";
+import { Shield, FileCheck, UserCheck, CheckCircle, Upload, AlertCircle } from "lucide-react";
+import { useAuthStore } from "../stores/authStore";
 
 export function KycVerification() {
   const [step, setStep] = useState(0);
+  const [error, setError] = useState<string | null>(null);
+  const user = useAuthStore((s) => s.user);
+  const fullName = user?.fullName || "User";
 
   const documentMutation = useMutation({
-    mutationFn: () => api.kycDocument("persona", "passport.pdf", "Demo User"),
+    mutationFn: () => api.kycDocument("persona " + Date.now(), "id-document.pdf", fullName),
   });
 
   const livenessMutation = useMutation({
-    mutationFn: () => api.kycLiveness("persona", "Demo User"),
+    mutationFn: () => api.kycLiveness("persona", fullName),
   });
 
   const watchlistMutation = useMutation({
-    mutationFn: () => api.kycWatchlist("persona", "Demo User", "123-45-6789"),
+    mutationFn: () => api.kycWatchlist("persona", fullName, "N/A"),
   });
 
   const steps = [
@@ -28,9 +32,16 @@ export function KycVerification() {
   ];
 
   const runAll = async () => {
+    setError(null);
     for (const s of steps) {
-      await s.mutation.mutateAsync();
-      setStep((i) => i + 1);
+      try {
+        await s.mutation.mutateAsync();
+        setStep((i) => i + 1);
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : "Verification step failed";
+        setError(message);
+        break;
+      }
     }
   };
 
@@ -85,6 +96,12 @@ export function KycVerification() {
             ))}
           </div>
 
+          {error && (
+            <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 mb-4">
+              <AlertCircle className="h-4 w-4" />
+              {error}
+            </div>
+          )}
           <div className="mt-6 flex gap-2">
             <Button onClick={runAll} disabled={step >= steps.length}>
               {step >= steps.length ? "All Checks Complete" : "Run All Checks"}

@@ -5,7 +5,8 @@ import { formatCurrency } from "../lib/utils";
 import { BarChart3, TrendingUp, PieChart, Activity } from "lucide-react";
 
 export function Analytics() {
-  useQuery({ queryKey: ["accounts"], queryFn: api.listAccounts });
+  const { data: accountsData } = useQuery({ queryKey: ["accounts"], queryFn: api.listAccounts });
+  void accountsData;
 
   const monthlyData = [
     { month: "Jan", income: 4200, expenses: 2800 },

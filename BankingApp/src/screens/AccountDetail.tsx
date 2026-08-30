@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "../services/api";
+import { api, type Transaction } from "../services/api";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -81,7 +81,7 @@ export function AccountDetail() {
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <div className="text-3xl font-bold text-blue-600">$0.00</div>
+            <div className="text-3xl font-bold text-blue-600">{formatCurrency(0)}</div>
             <p className="text-sm text-muted-foreground mt-1">Pending</p>
           </CardContent>
         </Card>
@@ -94,7 +94,7 @@ export function AccountDetail() {
             <p className="text-sm text-muted-foreground py-4 text-center">No transactions yet.</p>
           ) : (
             <div className="space-y-2">
-              {data.transactions.map((t: any) => (
+              {data.transactions.map((t: Transaction) => (
                 <div key={t.id} className="flex items-center justify-between rounded-lg border p-3">
                   <div>
                     <div className="text-sm font-medium">{t.description}</div>

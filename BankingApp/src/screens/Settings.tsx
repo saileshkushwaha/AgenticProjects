@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "../components/ui/card";
 import { User, Shield, Palette, Bell, Settings as SettingsIcon } from "lucide-react";
 import { Profile } from "./Profile";
@@ -16,6 +16,7 @@ const TABS = [
 
 export function Settings() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   return (
     <div className="space-y-6">
@@ -28,7 +29,7 @@ export function Settings() {
         {TABS.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => (window.location.href = tab.path)}
+            onClick={() => navigate(tab.path)}
             className={cn(
               "flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors whitespace-nowrap",
               location.pathname === tab.path

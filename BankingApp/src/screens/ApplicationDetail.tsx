@@ -11,9 +11,14 @@ export function ApplicationDetail() {
   const [reason, setReason] = useState("");
   const [decision, setDecision] = useState<string | null>(null);
 
-  const decideMutation = useMutation({
+  const approveMutation = useMutation({
     mutationFn: () => api.createApplication({ firstName: "App", lastName: "User", product: "checking", consent: true }),
     onSuccess: () => setDecision("approved"),
+  });
+
+  const rejectMutation = useMutation({
+    mutationFn: () => api.createApplication({ firstName: "App", lastName: "User", product: "checking", consent: true }),
+    onSuccess: () => setDecision("rejected"),
   });
 
   return (
@@ -42,14 +47,15 @@ export function ApplicationDetail() {
             <Textarea value={reason} onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setReason(e.target.value)} placeholder="Enter reason..." />
           </div>
           <div className="flex gap-2">
-            <Button onClick={() => decideMutation.mutate()} disabled={decideMutation.isPending}>
-              Approve
+            <Button onClick={() => approveMutation.mutate()} disabled={approveMutation.isPending}>
+              {approveMutation.isPending ? "Processing..." : "Approve"}
             </Button>
-            <Button variant="destructive" disabled={!reason.trim() || decideMutation.isPending}>
-              Reject
+            <Button variant="destructive" onClick={() => rejectMutation.mutate()} disabled={!reason.trim() || rejectMutation.isPending}>
+              {rejectMutation.isPending ? "Processing..." : "Reject"}
             </Button>
           </div>
-          {decision && <p className="text-sm text-green-600">Application approved!</p>}
+          {decision === "approved" && <p className="text-sm text-green-600">Application approved!</p>}
+          {decision === "rejected" && <p className="text-sm text-red-600">Application rejected.</p>}
         </CardContent>
       </Card>
     </div>
