@@ -14,6 +14,10 @@ import { Notifications } from "./screens/Notifications";
 import { Settings } from "./screens/Settings";
 import { Analytics } from "./screens/Analytics";
 import { KycVerification } from "./screens/KycVerification";
+import { Reports } from "./screens/Reports";
+import { Profile } from "./screens/Profile";
+import { Security } from "./screens/Security";
+import { Appearance } from "./screens/Appearance";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = useAuthStore((s) => s.token);
@@ -51,15 +55,15 @@ export default function App() {
                 <Route path="/applications/:id" element={<ApplicationDetail />} />
                 <Route path="/kyc" element={<KycVerification />} />
                 <Route path="/analytics" element={<Analytics />} />
-                <Route path="/reports" element={<Analytics />} />
+                <Route path="/reports" element={<Reports />} />
                 <Route path="/services" element={<Dashboard />} />
                 <Route path="/cards" element={<Dashboard />} />
                 <Route path="/loans" element={<Dashboard />} />
                 <Route path="/notifications" element={<Notifications />} />
                 <Route path="/settings" element={<Settings />} />
-                <Route path="/security" element={<Settings />} />
-                <Route path="/profile" element={<Settings />} />
-                <Route path="/appearance" element={<Settings />} />
+                <Route path="/security" element={<Security />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/appearance" element={<Appearance />} />
               </Routes>
             </Layout>
           </ProtectedRoute>

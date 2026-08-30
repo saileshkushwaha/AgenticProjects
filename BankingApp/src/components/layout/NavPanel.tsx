@@ -47,7 +47,6 @@ const CATEGORIES: MainCategory[] = [
     title: "Dashboard",
     items: [
       { to: "/", icon: LayoutDashboard, label: "Overview" },
-      { to: "/analytics", icon: TrendingUp, label: "Analytics" },
       { to: "/reports", icon: FileText, label: "Reports" },
     ],
   },
