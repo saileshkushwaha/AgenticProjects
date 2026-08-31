@@ -38,12 +38,9 @@ export function Transfers() {
       setReference("");
       setFromAccountId("");
       setToAccountId("");
-<<<<<<< ours
-=======
     },
     onError: (err) => {
       alert(err instanceof Error ? err.message : "Transfer failed");
->>>>>>> theirs
     },
   });
 
