@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 import { fileURLToPath } from "url";
 import path from "path";
 import { existsSync } from "fs";
-import { db, sqlite, initializeDatabase } from "./db/index.mjs";
+import { db, initializeDatabase } from "./db/index.mjs";
 import { users, accounts, transactions, transfers, kycRecords, auditLogs } from "./db/schema.mjs";
 import { eq, desc, and, gte, lte, sql } from "drizzle-orm";
 import { getVendor, VENDOR_NAMES } from "./kyc.mjs";
@@ -18,79 +18,12 @@ const JWT_SECRET = process.env.JWT_SECRET || "banking-app-secret-key-change-in-p
 const PORT = process.env.PORT || 8787;
 const DEFAULT_VENDOR = process.env.KYC_VENDOR || "persona";
 
-async function seedDatabase() {
-  try {
-    const existing = await db.select().from(users).where(eq(users.email, "demo@bank.com")).limit(1);
-    if (existing.length > 0) return;
-
-    const userId = randomUUID();
-    const passwordHash = await bcrypt.hash("demo1234", 12);
-    await db.insert(users).values([
-      { id: userId, email: "demo@bank.com", passwordHash, fullName: "Demo User", role: "customer" },
-      { id: randomUUID(), email: "officer@bank.com", passwordHash: await bcrypt.hash("officer123", 12), fullName: "Officer Smith", role: "officer" },
-    ]);
-
-    const checkingId = randomUUID();
-    const savingsId = randomUUID();
-    const businessId = randomUUID();
-    await db.insert(accounts).values([
-      { id: checkingId, userId, type: "checking", name: "Primary Checking", balance: 450000, currency: "USD", status: "active" },
-      { id: savingsId, userId, type: "savings", name: "Emergency Savings", balance: 300000, currency: "USD", status: "active" },
-      { id: businessId, userId, type: "business", name: "Business Account", balance: 1250000, currency: "USD", status: "active" },
-    ]);
-
-    const now = new Date();
-    const yesterday = new Date(Date.now() - 86400000);
-    const lastWeek = new Date(Date.now() - 7 * 86400000);
-    const lastMonth = new Date(Date.now() - 30 * 86400000);
-
-    await db.insert(transactions).values([
-      { id: randomUUID(), accountId: checkingId, type: "credit", amount: 500000, description: "Salary Deposit", category: "income", date: now, balanceAfter: 500000 },
-      { id: randomUUID(), accountId: checkingId, type: "debit", amount: 120000, description: "Rent Payment", category: "housing", date: now, balanceAfter: 380000 },
-      { id: randomUUID(), accountId: checkingId, type: "debit", amount: 4500, description: "Grocery Store", category: "food", date: yesterday, balanceAfter: 375500 },
-      { id: randomUUID(), accountId: checkingId, type: "debit", amount: 1200, description: "Netflix Subscription", category: "entertainment", date: yesterday, balanceAfter: 374300 },
-      { id: randomUUID(), accountId: checkingId, type: "credit", amount: 25000, description: "Freelance Payment", category: "income", date: lastWeek, balanceAfter: 399300 },
-      { id: randomUUID(), accountId: checkingId, type: "debit", amount: 8900, description: "Electric Bill", category: "utilities", date: lastWeek, balanceAfter: 390400 },
-      { id: randomUUID(), accountId: checkingId, type: "debit", amount: 3500, description: "Internet Bill", category: "utilities", date: lastMonth, balanceAfter: 420000 },
-      { id: randomUUID(), accountId: savingsId, type: "credit", amount: 250000, description: "Initial Savings Deposit", category: "income", date: lastMonth, balanceAfter: 250000 },
-      { id: randomUUID(), accountId: savingsId, type: "credit", amount: 50000, description: "Transfer from Checking", category: "transfer", date: lastWeek, balanceAfter: 300000 },
-      { id: randomUUID(), accountId: businessId, type: "credit", amount: 1500000, description: "Client Payment - Project A", category: "income", date: now, balanceAfter: 1500000 },
-      { id: randomUUID(), accountId: businessId, type: "debit", amount: 250000, description: "Office Rent", category: "housing", date: yesterday, balanceAfter: 1250000 },
-      { id: randomUUID(), accountId: checkingId, type: "debit", amount: 50000, description: "Transfer: Monthly savings", category: "transfer", date: lastWeek, balanceAfter: 450000 },
-      { id: randomUUID(), accountId: savingsId, type: "credit", amount: 50000, description: "Transfer received: Monthly savings", category: "transfer", date: lastWeek, balanceAfter: 300000 },
-    ]);
-
-    const transferId = randomUUID();
-    await db.insert(transfers).values([
-      { id: transferId, fromAccountId: checkingId, toAccountId: savingsId, amount: 50000, transferType: "internal", status: "completed", reference: "Monthly savings", createdAt: lastWeek },
-      { id: randomUUID(), fromAccountId: checkingId, toAccountId: null, externalRouting: "021000021", externalAccount: "987654321", amount: 25000, transferType: "ach", status: "completed", reference: "Rent payment", createdAt: yesterday },
-      { id: randomUUID(), fromAccountId: checkingId, toAccountId: savingsId, amount: 100000, transferType: "internal", status: "pending", reference: "Future savings", createdAt: now },
-    ]);
-
-    await db.insert(kycRecords).values([
-      { id: randomUUID(), userId, status: "verified", documentType: "Passport", vendor: "persona", score: 91, verifiedAt: now },
-    ]);
-
-    await db.insert(auditLogs).values([
-      { id: randomUUID(), userId, action: "user_registered", entityType: "users", entityId: userId, metadata: JSON.stringify({ seeded: true }) },
-      { id: randomUUID(), userId, action: "account_created", entityType: "accounts", entityId: checkingId, metadata: JSON.stringify({ type: "checking" }) },
-      { id: randomUUID(), userId, action: "account_created", entityType: "accounts", entityId: savingsId, metadata: JSON.stringify({ type: "savings" }) },
-      { id: randomUUID(), userId, action: "kyc_verified", entityType: "kyc_records", metadata: JSON.stringify({ score: 91 }) },
-    ]);
-
-    console.log("Database seeded successfully");
-  } catch (e) {
-    console.error("Seed failed:", e);
-  }
-}
-
 function createApp() {
   const app = express();
   app.use(cors());
   app.use(express.json());
 
   initializeDatabase();
-  seedDatabase();
 
   // ---- Auth Middleware ----
   function authMiddleware(req, res, next) {
@@ -203,41 +136,25 @@ function createApp() {
     res.json({ ...found[0], transactions: txns });
   });
 
-  app.post("/api/accounts/:id/deposit", authMiddleware, async (req, res) => {
-    const { amount, description } = req.body || {};
-    const amountCents = Math.round(Number(amount) * 100);
-    if (!amountCents || amountCents <= 0) return res.status(400).json({ error: "amount must be positive" });
-    const found = await db.select().from(accounts).where(and(eq(accounts.id, req.params.id), eq(accounts.userId, req.user.id))).limit(1);
-    if (found.length === 0) return res.status(404).json({ error: "Account not found" });
-    const account = found[0];
-    const newBalance = account.balance + amountCents;
-    await db.update(accounts).set({ balance: newBalance }).where(eq(accounts.id, req.params.id));
-    const txnId = randomUUID();
-    await db.insert(transactions).values({ id: txnId, accountId: req.params.id, type: "credit", amount: amountCents, description: description || "Deposit", category: "income", date: new Date(), balanceAfter: newBalance });
-    await logAudit(req.user.id, "deposit", "accounts", req.params.id, { amount: amountCents });
-    res.json({ id: req.params.id, balance: newBalance, transaction: { id: txnId, amount: amountCents, description: description || "Deposit" } });
-  });
-
   // ---- Transaction Routes ----
   app.get("/api/transactions", authMiddleware, async (req, res) => {
-    try {
-      const rows = sqlite.prepare("SELECT * FROM transactions ORDER BY date DESC LIMIT 50").all();
-      const mapped = rows.map((r) => ({
-        id: r.id,
-        accountId: r.account_id,
-        type: r.type,
-        amount: r.amount,
-        description: r.description,
-        category: r.category,
-        date: r.date,
-        balanceAfter: r.balance_after,
-        createdAt: r.created_at,
-      }));
-      res.json({ transactions: mapped, total: mapped.length, page: 1, totalPages: 1 });
-    } catch (e) {
-      console.error("Transactions error:", e);
-      res.status(500).json({ error: e.message });
-    }
+    const { accountId, startDate, endDate, category, page = "1", limit = "50" } = req.query;
+    const pageNum = Math.max(1, parseInt(page));
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit)));
+    const offset = (pageNum - 1) * limitNum;
+
+    const conditions = [];
+    if (accountId) conditions.push(eq(transactions.accountId, accountId));
+    if (startDate) conditions.push(gte(transactions.date, new Date(startDate)));
+    if (endDate) conditions.push(lte(transactions.date, new Date(endDate)));
+    if (category) conditions.push(eq(transactions.category, category));
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+    const txns = await db.select().from(transactions).where(whereClause).orderBy(desc(transactions.date)).limit(limitNum).offset(offset);
+    const countResult = await db.select({ count: sql<number>`count(*)` }).from(transactions).where(whereClause);
+    const total = countResult[0]?.count || 0;
+
+    res.json({ transactions: txns, total, page: pageNum, totalPages: Math.ceil(total / limitNum) });
   });
 
   // ---- Transfer Routes ----
@@ -306,25 +223,15 @@ function createApp() {
   });
 
   app.get("/api/transfers", authMiddleware, async (req, res) => {
-    try {
-      const rows = sqlite.prepare("SELECT * FROM transfers ORDER BY created_at DESC LIMIT 50").all();
-      const mapped = rows.map((r) => ({
-        id: r.id,
-        fromAccountId: r.from_account_id,
-        toAccountId: r.to_account_id,
-        externalRouting: r.external_routing,
-        externalAccount: r.external_account,
-        amount: r.amount,
-        transferType: r.transfer_type,
-        status: r.status,
-        reference: r.reference,
-        createdAt: r.created_at,
-      }));
-      res.json({ transfers: mapped });
-    } catch (e) {
-      console.error("Transfers error:", e);
-      res.status(500).json({ error: e.message });
-    }
+    const userAccounts = await db.select().from(accounts).where(eq(accounts.userId, req.user.id));
+    const accountIds = userAccounts.map((a) => a.id);
+    if (accountIds.length === 0) return res.json({ transfers: [] });
+
+    const userTransfers = await db.select().from(transfers)
+      .where(sql`${transfers.fromAccountId} IN (${sql.join(accountIds.map((id) => sql`${id}`), sql`, `)})`)
+      .orderBy(desc(transfers.createdAt))
+      .limit(50);
+    res.json({ transfers: userTransfers });
   });
 
   // ---- KYC Routes ----
@@ -402,6 +309,9 @@ function createApp() {
     res.json({ id: req.params.id, status: decision, decidedAt: new Date().toISOString() });
   });
 
+<<<<<<< ours
+  // ---- Serve built SPA ----
+=======
   // ---- Notifications ----
   app.get("/api/notifications", authMiddleware, async (req, res) => {
     const logs = await db.select().from(auditLogs)
@@ -622,6 +532,7 @@ function createApp() {
   });
 
   // ---- Serve built SPA (MUST BE LAST) ----
+>>>>>>> theirs
   const distDir = path.join(__dirname, "..", "dist");
   if (existsSync(distDir)) {
     app.use(express.static(distDir));
